@@ -165,12 +165,23 @@ Jobs:
 
 - `cargo fmt --check`
 - `cargo clippy -D warnings`
-- `cargo check`
+- `cargo check --all-targets`
 
 3. E2E smoke
 
 - `npx playwright install --with-deps chromium`
 - `npm run e2e`
+
+4. Final required check
+
+- `CI (required)` depends on all jobs above and is used for branch protection.
+
+## Branch Protection Policy
+
+- `main` is protected.
+- Direct pushes to `main` are disabled.
+- All changes must go through pull requests.
+- Merge is allowed only after required CI checks pass.
 
 ## Environment Configuration
 
