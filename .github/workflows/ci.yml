@@ -10,6 +10,9 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   frontend:
     name: Frontend Checks
@@ -39,7 +42,7 @@ jobs:
         run: npm run typecheck
 
       - name: Run tests
-        run: npm run test
+        run: npm run test:ci
 
       - name: Build web app
         run: npm run build
@@ -105,6 +108,8 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium

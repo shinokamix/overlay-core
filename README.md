@@ -133,6 +133,7 @@ npm run tauri dev
 - `npm run format` - format code with Prettier
 - `npm run format:check` - verify formatting
 - `npm run test` - run Vitest once
+- `npm run test:ci` - run tests in CI-safe mode
 - `npm run test:watch` - run Vitest in watch mode
 - `npm run test:coverage` - generate coverage report
 - `npm run e2e` - run Playwright tests
@@ -158,7 +159,7 @@ Jobs:
 - `npm run format:check`
 - `npm run lint`
 - `npm run typecheck`
-- `npm run test`
+- `npm run test:ci`
 - `npm run build`
 
 2. Rust/Tauri checks
@@ -171,6 +172,7 @@ Jobs:
 
 - `npx playwright install --with-deps chromium`
 - `npm run e2e`
+- Playwright browser cache is restored via GitHub Actions cache.
 
 4. Final required check
 
