@@ -13,6 +13,10 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  VITE_APP_ENV: ${{ github.event_name == 'pull_request' && 'staging' || 'production' }}
+  VITE_ENABLE_CRASH_REPORTS: "false"
+
 jobs:
   frontend:
     name: Frontend Checks
