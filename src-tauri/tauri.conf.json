@@ -36,7 +36,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDg5N0E0MUQyQ0E2NEUyREIKUldUYjRtVEswa0Y2aVEwTkY5QWZSMEhnY0dBTUJmbDNVVEJCanMrKzdoRnVZVkt6RDE4RHVWeHgK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM3RjlFQUZBMkZFN0U1QjEKUldTeDVlY3YrdXI1TjVoQWhmcm1nUkszeDdjVXZPMU5xQ2JTN3lvUlJpVkk4ajV6YmR2ZDJmOE0K",
       "endpoints": [
         "https://github.com/shinokamix/overlay-core/releases/latest/download/latest.json"
       ]
