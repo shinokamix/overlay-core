@@ -17,11 +17,12 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "prepare": "husky",
-    "prepush:verify": "npm run typecheck && npm run test",
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm run test",
+    "prepush:verify": "npm run typecheck && npm run test:ci",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run test:ci",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
-    "e2e:install": "playwright install --with-deps chromium"
+    "e2e:install": "playwright install --with-deps chromium",
+    "test:ci": "vitest run"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",

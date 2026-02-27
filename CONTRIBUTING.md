@@ -6,6 +6,25 @@
 2. Make focused changes.
 3. Run local checks.
 4. Open a PR with a clear scope and rationale.
+5. Merge only after required CI checks pass.
+
+`main` is protected:
+
+- Direct pushes to `main` are not allowed.
+- Changes must go through pull requests.
+- Merge is allowed only when required CI checks are green.
+
+## Branch naming
+
+Use one of these prefixes:
+
+- `feat/<short-kebab-name>`
+- `fix/<short-kebab-name>`
+- `refactor/<short-kebab-name>`
+- `chore/<short-kebab-name>`
+- `docs/<short-kebab-name>`
+- `test/<short-kebab-name>`
+- `ci/<short-kebab-name>`
 
 ## Local checks
 
