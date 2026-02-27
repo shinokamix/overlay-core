@@ -7,14 +7,23 @@ Describe what changed and why.
 - [ ] Bug fix
 - [ ] Feature
 - [ ] Refactor
-- [ ] Docs/infra
+- [ ] Infrastructure / CI
+- [ ] Documentation
 
 ## Validation
 
+Describe how this was tested.
+
 - [ ] `npm run check`
 - [ ] `cargo check --manifest-path src-tauri/Cargo.toml`
-- [ ] Additional manual verification (if needed)
+- [ ] Manual verification (if applicable)
 
 ## Risks
 
 List any known tradeoffs or follow-up items.
+
+## Before requesting review
+
+- [ ] Local checks pass
+- [ ] Documentation updated if needed
+- [ ] CI is green
