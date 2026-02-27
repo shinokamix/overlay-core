@@ -66,6 +66,8 @@ Not implemented yet (next milestones):
 ```text
 .
 ├── .github/workflows/ci.yml
+├── .github/workflows/release-beta.yml
+├── .github/workflows/release-stable.yml
 ├── .github/PULL_REQUEST_TEMPLATE.md
 ├── .github/ISSUE_TEMPLATE/
 ├── ARCHITECTURE.md
@@ -177,6 +179,45 @@ Jobs:
 4. Final required check
 
 - `CI (required)` depends on all jobs above and is used for branch protection.
+
+## CD / Releases
+
+Release channels:
+
+- stable updater endpoint: `https://github.com/shinokamix/overlay-core/releases/latest/download/latest.json`
+- beta updater endpoint: `https://github.com/shinokamix/overlay-core/releases/download/beta/latest.json`
+
+Workflows:
+
+- `.github/workflows/release-beta.yml` - manual beta publish, updates `beta` prerelease tag
+- `.github/workflows/release-stable.yml` - stable publish on `vX.Y.Z` tag push
+
+### Required GitHub secrets
+
+Updater signing:
+
+- `TAURI_SIGNING_PRIVATE_KEY`
+- `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` (optional if key has no password)
+
+macOS signing / notarization (optional but recommended for production):
+
+- `APPLE_CERTIFICATE`
+- `APPLE_CERTIFICATE_PASSWORD`
+- `KEYCHAIN_PASSWORD`
+- `APPLE_ID`
+- `APPLE_PASSWORD`
+- `APPLE_TEAM_ID`
+
+### Generate updater keypair
+
+```bash
+npm run tauri signer generate -- --ci -w ~/.tauri/overlay-core.key
+```
+
+Store:
+
+- `~/.tauri/overlay-core.key` in GitHub secret `TAURI_SIGNING_PRIVATE_KEY`
+- `~/.tauri/overlay-core.key.pub` in `src-tauri/tauri.conf.json` (`plugins.updater.pubkey`)
 
 ## Branch Protection Policy
 
