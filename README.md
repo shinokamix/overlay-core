@@ -196,6 +196,10 @@ Current variables:
 
 Validation is fail-fast at app startup (`src/shared/config/env.ts`).
 Never commit real secrets: `.env*` files are git-ignored except `.env.example`.
+In CI, environment is set explicitly:
+
+- pull requests to `main` run with `VITE_APP_ENV=staging`
+- pushes to `main` run with `VITE_APP_ENV=production`
 
 ## Privacy and Safety Principles
 
