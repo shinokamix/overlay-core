@@ -191,6 +191,7 @@ Workflows:
 
 - `.github/workflows/release-beta.yml` - manual beta publish, updates `beta` prerelease tag
 - `.github/workflows/release-stable.yml` - stable publish on `vX.Y.Z` tag push
+- current release matrix: Linux + Windows only (macOS release jobs are disabled)
 
 ### Required GitHub secrets
 
@@ -199,7 +200,7 @@ Updater signing:
 - `TAURI_SIGNING_PRIVATE_KEY`
 - `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` (optional if key has no password)
 
-macOS signing / notarization (optional but recommended for production):
+If you re-enable macOS release jobs, add these secrets:
 
 - `APPLE_CERTIFICATE`
 - `APPLE_CERTIFICATE_PASSWORD`
