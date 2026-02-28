@@ -91,6 +91,17 @@ cargo check --manifest-path src-tauri/Cargo.toml
 - Split unrelated work into separate branches/PRs.
 - Update docs when behavior or project workflow changes.
 
+## Issue triage labels
+
+Severity and release-blocking labels are defined in
+`.github/ISSUE_LABELS.md`.
+
+Use this taxonomy for all bug triage:
+
+- assign exactly one `severity/*` label (`severity/p0`..`severity/p3`);
+- assign one `release/*` label for milestone-tracked bugs;
+- treat `severity/p0` and `severity/p1` as release blockers by default.
+
 ## Ownership and review routing
 
 - `CODEOWNERS` is used for automatic reviewer assignment.

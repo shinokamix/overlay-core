@@ -22,6 +22,28 @@ body:
       label: Expected behavior
     validations:
       required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity (initial estimate)
+      description: Use P0 for critical outage/security/data-loss; P3 for minor issues.
+      options:
+        - P0 - critical outage/security/data loss
+        - P1 - major broken behavior
+        - P2 - moderate impact with workaround
+        - P3 - minor issue/polish
+    validations:
+      required: true
+  - type: dropdown
+    id: release_blocking
+    attributes:
+      label: Release impact
+      description: Should this block the next stable release?
+      options:
+        - Yes, likely release-blocking
+        - No, not release-blocking
+    validations:
+      required: true
   - type: textarea
     id: environment
     attributes:
