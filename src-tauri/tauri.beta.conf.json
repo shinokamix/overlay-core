@@ -1,0 +1,8 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "plugins": {
+    "updater": {
+      "endpoints": ["https://github.com/shinokamix/overlay-core/releases/download/beta/latest.json"]
+    }
+  }
+}
