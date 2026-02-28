@@ -48,6 +48,10 @@ Not implemented yet (next milestones):
 - Local session persistence
 - Settings UX (hotkeys, overlay behavior, providers)
 
+## Roadmap
+
+Release milestones, cadence, and go/no-go gates are documented in [`ROADMAP.md`](./ROADMAP.md).
+
 ## Tech Stack
 
 - Desktop shell: Tauri v2 (Rust)
