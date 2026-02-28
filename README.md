@@ -52,6 +52,27 @@ Not implemented yet (next milestones):
 
 Release milestones, cadence, and go/no-go gates are documented in [`ROADMAP.md`](./ROADMAP.md).
 
+## Documentation
+
+Project docs are intentionally kept as a small set of focused Markdown files:
+
+- [`README.md`](./README.md) - project overview, setup, scripts, CI/CD basics
+- [`ROADMAP.md`](./ROADMAP.md) - current milestone plan and release cadence
+- [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md) - operational go/no-go, rollback, post-release steps
+- [`CHANGELOG.md`](./CHANGELOG.md) - user-facing changes (`Unreleased` and versioned entries)
+- [`CONTRIBUTING.md`](./CONTRIBUTING.md) - contribution workflow, branch policy, local checks
+- [`ARCHITECTURE.md`](./ARCHITECTURE.md) - structure and architectural constraints
+- [`SECURITY.md`](./SECURITY.md) - vulnerability reporting and security baseline
+- [`.github/ISSUE_LABELS.md`](./.github/ISSUE_LABELS.md) - severity and release-impact label taxonomy
+
+Documentation update rules:
+
+- Update `CHANGELOG.md` for user-facing behavior changes.
+- Update `ROADMAP.md` at each milestone boundary or when planning policy changes.
+- Update `RELEASE_CHECKLIST.md` when release operations or go/no-go gates change.
+- Update `ARCHITECTURE.md` when module boundaries or dependency direction changes.
+- Update `README.md` when developer setup, scripts, or top-level navigation changes.
+
 ## Tech Stack
 
 - Desktop shell: Tauri v2 (Rust)
