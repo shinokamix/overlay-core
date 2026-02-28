@@ -10,11 +10,56 @@ Follow these rules when making changes in this repository.
 
 ## Workflow
 
-- If current branch is `main`, create a new branch from `main` (do not commit to `main` directly).
+- Every new task (feature, fix, refactor, docs/test/ci change) must start in a fresh branch created from `main`.
+- Do not reuse an old task branch for a new request, even if branch names are similar.
+- Never commit directly to `main`.
+- If user explicitly asks to continue an existing branch, continue only that same scope.
+- If worktree is dirty before starting a new task, stop and ask the user how to proceed.
 - Make focused, minimal changes with a clear rationale.
 - Run all required local checks before finishing.
 - Assume `main` is protected and merges require green required CI checks.
 - Do NOT create or open pull requests; the user will do that.
+
+## Branch start protocol (required)
+
+Run this at the start of each new task:
+
+1. Ensure worktree is clean (`git status --short`).
+2. Sync `main` from remote.
+3. Create a new branch from updated `main`.
+4. Confirm current branch is not `main`.
+
+Suggested commands:
+
+```bash
+git fetch origin main
+git switch main
+git pull --ff-only origin main
+git switch -c <type>/<short-kebab-name>
+git branch --show-current
+```
+
+If `origin` is not configured, use local `main` as the source branch.
+
+## Execution contract (required)
+
+At task start:
+
+1. Classify scope (`feat`, `fix`, `refactor`, `chore`, `docs`, `test`, `ci`).
+2. Create a branch name from that scope.
+3. Keep change set focused to one logical task.
+
+During implementation:
+
+- Prefer reading architecture context first: `README.md`, `ARCHITECTURE.md`, and nearest local docs.
+- For risky edits, run targeted checks first, then run required full checks.
+- Do not make unrelated refactors in the same task branch.
+
+At task finish, report:
+
+- Files changed and why.
+- Checks run and results.
+- Remaining risks or follow-ups.
 
 ## Branch naming
 
