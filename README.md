@@ -196,6 +196,7 @@ Workflows:
 - `.github/workflows/release-beta.yml` - manual beta publish, updates `beta` prerelease tag
 - `.github/workflows/release-stable.yml` - stable publish on `vX.Y.Z` tag push
 - current release matrix: Linux + Windows only (macOS release jobs are disabled)
+- release operation checklist: [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md)
 
 ### Required GitHub secrets
 
