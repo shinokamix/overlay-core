@@ -26,4 +26,5 @@ List any known tradeoffs or follow-up items.
 
 - [ ] Local checks pass
 - [ ] Documentation updated if needed
+- [ ] `CHANGELOG.md` updated for user-facing changes (or marked as not applicable)
 - [ ] CI is green

@@ -48,6 +48,26 @@ Not implemented yet (next milestones):
 - Local session persistence
 - Settings UX (hotkeys, overlay behavior, providers)
 
+## Roadmap
+
+Release milestones, cadence, and go/no-go gates are documented in [`ROADMAP.md`](./ROADMAP.md).
+
+## Documentation
+
+Project docs are intentionally kept as a small set of focused Markdown files:
+
+- [`README.md`](./README.md) - project overview, setup, scripts, CI/CD basics
+- [`ROADMAP.md`](./ROADMAP.md) - current milestone plan and release cadence
+- [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md) - operational go/no-go, rollback, post-release steps
+- [`CHANGELOG.md`](./CHANGELOG.md) - user-facing changes (`Unreleased` and versioned entries)
+- [`CONTRIBUTING.md`](./CONTRIBUTING.md) - contribution workflow, branch policy, local checks
+- [`ARCHITECTURE.md`](./ARCHITECTURE.md) - structure and architectural constraints
+- [`SECURITY.md`](./SECURITY.md) - vulnerability reporting and security baseline
+- [`.github/ISSUE_LABELS.md`](./.github/ISSUE_LABELS.md) - severity and release-impact label taxonomy
+
+Documentation update rules are defined in [`CONTRIBUTING.md`](./CONTRIBUTING.md)
+and [`AGENTS.md`](./AGENTS.md).
+
 ## Tech Stack
 
 - Desktop shell: Tauri v2 (Rust)
@@ -138,6 +158,7 @@ npm run tauri dev
 - `npm run test:ci` - run tests in CI-safe mode
 - `npm run test:watch` - run Vitest in watch mode
 - `npm run test:coverage` - generate coverage report
+- `npm run version:bump -- <version>` - sync app version in `package.json`, `src-tauri/Cargo.toml`, and `src-tauri/tauri.conf.json`
 - `npm run e2e` - run Playwright tests
 - `npm run e2e:ui` - run Playwright UI mode
 - `npm run e2e:install` - install Playwright Chromium + deps
@@ -192,6 +213,7 @@ Workflows:
 - `.github/workflows/release-beta.yml` - manual beta publish, updates `beta` prerelease tag
 - `.github/workflows/release-stable.yml` - stable publish on `vX.Y.Z` tag push
 - current release matrix: Linux + Windows only (macOS release jobs are disabled)
+- release operation checklist: [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md)
 
 ### Required GitHub secrets
 

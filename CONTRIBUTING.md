@@ -91,6 +91,27 @@ cargo check --manifest-path src-tauri/Cargo.toml
 - Split unrelated work into separate branches/PRs.
 - Update docs when behavior or project workflow changes.
 
+## Documentation updates
+
+When relevant, update these files in the same PR:
+
+- `CHANGELOG.md` for user-facing behavior changes;
+- `ROADMAP.md` at each milestone boundary or when planning policy changes;
+- `RELEASE_CHECKLIST.md` when release operations or go/no-go gates change;
+- `ARCHITECTURE.md` when module boundaries or dependency direction changes;
+- `README.md` when setup steps, scripts, or top-level navigation changes.
+
+## Issue triage labels
+
+Severity and release-blocking labels are defined in
+`.github/ISSUE_LABELS.md`.
+
+Use this taxonomy for all bug triage:
+
+- assign exactly one `severity/*` label (`severity/p0`..`severity/p3`);
+- assign one `release/*` label for milestone-tracked bugs;
+- treat `severity/p0` and `severity/p1` as release blockers by default.
+
 ## Ownership and review routing
 
 - `CODEOWNERS` is used for automatic reviewer assignment.
@@ -100,6 +121,7 @@ cargo check --manifest-path src-tauri/Cargo.toml
 
 - [ ] Scope is focused and explained
 - [ ] Tests added/updated where needed
+- [ ] `CHANGELOG.md` updated for user-facing changes (or marked as not applicable)
 - [ ] `npm run check` passes
 - [ ] `cargo check --manifest-path src-tauri/Cargo.toml` passes
 - [ ] Docs updated if behavior/structure changed
