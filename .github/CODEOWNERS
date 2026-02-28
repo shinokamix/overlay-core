@@ -1,0 +1,8 @@
+# Default ownership
+* @shinokamix
+
+# Area ownership
+/.github/ @shinokamix
+/src/ @shinokamix
+/src-tauri/ @shinokamix
+/e2e/ @shinokamix
