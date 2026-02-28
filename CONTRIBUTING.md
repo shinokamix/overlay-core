@@ -100,6 +100,7 @@ cargo check --manifest-path src-tauri/Cargo.toml
 
 - [ ] Scope is focused and explained
 - [ ] Tests added/updated where needed
+- [ ] `CHANGELOG.md` updated for user-facing changes (or marked as not applicable)
 - [ ] `npm run check` passes
 - [ ] `cargo check --manifest-path src-tauri/Cargo.toml` passes
 - [ ] Docs updated if behavior/structure changed
