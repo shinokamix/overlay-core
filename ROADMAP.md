@@ -31,6 +31,7 @@ _Last updated: 2026-02-28_
 - Unified version bump command added: `npm run version:bump -- <version>`.
 - Severity and release-impact taxonomy added (`severity/*`, `release/*` labels).
 - GitHub milestones `M1..M4` created.
+- Initial milestone backlog issues created and mapped (`#8..#23`).
 
 ## Milestone Cadence
 
@@ -151,10 +152,10 @@ Target direction:
 
 ## Next Actions (next 2 weeks)
 
-1. Reassign open issues to `M1..M4` with explicit milestone ownership.
-2. Ensure each bug in active milestone has both `severity/*` and `release/*` labels.
-3. Start first milestone metrics snapshot at M1 close (`2026-03-15`).
-4. Run first public milestone review and publish summary after M1.
+1. Assign owners and estimates for M1 issues `#8..#11`.
+2. Start implementation of M1 vertical slice and keep scope frozen to M1.
+3. Define metric capture template for M1 close (`2026-03-15`).
+4. Prepare milestone review summary template for public update.
 
 ## Review Rules
 
