@@ -91,6 +91,16 @@ cargo check --manifest-path src-tauri/Cargo.toml
 - Split unrelated work into separate branches/PRs.
 - Update docs when behavior or project workflow changes.
 
+## Documentation updates
+
+When relevant, update these files in the same PR:
+
+- `CHANGELOG.md` for user-facing behavior changes;
+- `ROADMAP.md` at each milestone boundary or when planning policy changes;
+- `RELEASE_CHECKLIST.md` when release operations or go/no-go gates change;
+- `ARCHITECTURE.md` when module boundaries or dependency direction changes;
+- `README.md` when setup steps, scripts, or top-level navigation changes.
+
 ## Issue triage labels
 
 Severity and release-blocking labels are defined in

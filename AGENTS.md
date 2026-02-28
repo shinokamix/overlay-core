@@ -104,6 +104,16 @@ Changes should not introduce failures in CI checks:
 - Keep changes small and testable.
 - Do not introduce dependency changes without clear need.
 
+## Documentation rules
+
+Update documentation in the same task when changes affect behavior or process:
+
+- update `CHANGELOG.md` for user-facing behavior changes;
+- update `ROADMAP.md` at milestone boundaries or when planning policy changes;
+- update `RELEASE_CHECKLIST.md` when release operations/go-no-go gates change;
+- update `ARCHITECTURE.md` when module boundaries or dependency direction changes;
+- update `README.md` when setup, scripts, or top-level navigation changes.
+
 ## Security and env
 
 - Never commit secrets or real API keys.

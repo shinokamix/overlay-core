@@ -65,13 +65,8 @@ Project docs are intentionally kept as a small set of focused Markdown files:
 - [`SECURITY.md`](./SECURITY.md) - vulnerability reporting and security baseline
 - [`.github/ISSUE_LABELS.md`](./.github/ISSUE_LABELS.md) - severity and release-impact label taxonomy
 
-Documentation update rules:
-
-- Update `CHANGELOG.md` for user-facing behavior changes.
-- Update `ROADMAP.md` at each milestone boundary or when planning policy changes.
-- Update `RELEASE_CHECKLIST.md` when release operations or go/no-go gates change.
-- Update `ARCHITECTURE.md` when module boundaries or dependency direction changes.
-- Update `README.md` when developer setup, scripts, or top-level navigation changes.
+Documentation update rules are defined in [`CONTRIBUTING.md`](./CONTRIBUTING.md)
+and [`AGENTS.md`](./AGENTS.md).
 
 ## Tech Stack
 
