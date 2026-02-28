@@ -2,16 +2,11 @@
 
 _Last updated: 2026-02-28_
 
-## Purpose
+## Direction Update
 
-This document defines:
-
-- release milestones and target outcomes;
-- release readiness gates for `beta` and `stable`;
-- operating cadence for planning, release, and follow-up;
-- explicit gaps to close before `1.0.0`.
-
-It complements `README.md` (project overview) and `ARCHITECTURE.md` (technical structure).
+- All roadmap milestones are now fixed to 2-week windows.
+- Closed beta is removed. Development and validation are open by default.
+- Release planning remains two-channel (`beta` and `stable`) with explicit go/no-go gates.
 
 ## Current State Snapshot (verified on 2026-02-28)
 
@@ -23,186 +18,145 @@ It complements `README.md` (project overview) and `ARCHITECTURE.md` (technical s
 
 ### Delivery system
 
-- CI is strong for the current scope: format, lint, typecheck, tests, build, Rust checks, Playwright smoke.
-- Release channels already exist:
+- CI is in place: format, lint, typecheck, tests, build, Rust checks, Playwright smoke.
+- Release channels are configured:
   - `beta`: manual workflow to the `beta` prerelease tag.
   - `stable`: push `vX.Y.Z` tag to publish stable release.
-- Updater endpoints are configured for stable and beta channels.
+- Updater endpoints for stable and beta are already configured.
 
-### Additional work needed beyond README
+### Completed since initial roadmap draft
 
-- Add repository changelog policy (`CHANGELOG.md` + release note discipline).
-- Define version synchronization policy across `package.json`, `src-tauri/Cargo.toml`, and `src-tauri/tauri.conf.json`.
-- Add a release runbook (go/no-go checks, rollback, post-release verification).
-- Establish delivery metric baseline (DORA + product quality indicators).
-- Set milestone ownership and explicit acceptance criteria in issue tracker.
+- `CHANGELOG.md` added and required in PR checklist for user-facing changes.
+- `RELEASE_CHECKLIST.md` added with go/no-go, rollback, and post-release checks.
+- Unified version bump command added: `npm run version:bump -- <version>`.
+- Severity and release-impact taxonomy added (`severity/*`, `release/*` labels).
+- GitHub milestones `M1..M4` created.
 
-## Planning and Release Principles
+## Milestone Cadence
 
-- Plan by outcomes, not feature volume.
-- Use short iterations (1-2 weeks) with a usable increment every cycle.
-- Keep two channels:
-  - frequent `beta` for learning and stabilization;
-  - guarded `stable` for production users.
-- Keep scope small and merge continuously on short-lived branches.
-- Tag stable releases with SemVer (`vMAJOR.MINOR.PATCH`).
-- Maintain one source of truth for changes (`CHANGELOG.md`).
+- Each milestone is 14 days.
+- End of each milestone includes:
+  - milestone review/demo;
+  - beta release decision and publish (if go);
+  - stable release decision (if go).
+- Work is tracked publicly in open milestones and issues.
 
-## Roadmap Horizons
+## Release Milestones (2 weeks each, open)
 
-- `Now` (0-6 weeks): complete and stabilize the first end-to-end vertical slice.
-- `Next` (6-12 weeks): harden UX/settings/persistence and improve reliability.
-- `Later` (12+ weeks): scale for open beta and GA readiness.
+| Milestone                   | Window                   | Release target                     | Primary outcome                                                           |
+| --------------------------- | ------------------------ | ---------------------------------- | ------------------------------------------------------------------------- |
+| M1 - Open Alpha Slice       | 2026-03-02 to 2026-03-15 | `0.2.0-beta.*`                     | End-to-end first slice: `hotkey -> screenshot -> attach -> ask -> answer` |
+| M2 - Open Beta Foundations  | 2026-03-16 to 2026-03-29 | `0.3.0-beta.*`                     | Settings baseline, local session persistence, provider adapter skeleton   |
+| M3 - Open Beta Hardening    | 2026-03-30 to 2026-04-12 | `0.4.0-beta.*`                     | Streaming UX hardening, failure handling, updater confidence              |
+| M4 - Open Release Readiness | 2026-04-13 to 2026-04-26 | `0.5.0-beta.*` and stable go/no-go | Release-readiness pass with open rollout and first stable candidate       |
 
-## Release Milestones
-
-| Milestone                 | Target window       | Release train  | Primary outcome                                     |
-| ------------------------- | ------------------- | -------------- | --------------------------------------------------- |
-| M1 - Technical Alpha      | March-April 2026    | `0.2.0-beta.*` | First working vertical slice on Linux and Windows   |
-| M2 - Closed Beta          | May-June 2026       | `0.3.x`        | Daily-usable prototype for a trusted internal group |
-| M3 - Open Beta            | July-September 2026 | `0.5.x`        | Wider distribution readiness and supportability     |
-| M4 - General Availability | Q4 2026             | `v1.0.0`       | Stable baseline for broad adoption                  |
-
-### M1 - Technical Alpha
+### M1 - Open Alpha Slice (2026-03-02 to 2026-03-15)
 
 Scope focus:
 
 - Global hotkey toggles overlay.
-- User can capture screenshot and see draft attachment queue.
-- User can send prompt with attachments and receive model response.
+- User can capture screenshot and manage attachment draft queue.
+- User can send prompt with attachment context and receive model response.
 
 Exit criteria:
 
-- No open `P0` defects in milestone scope.
-- CI required checks are green.
-- At least one successful internal beta cycle with no blocker regressions.
-- Update flow is validated in beta channel.
+- Core flow works on Linux and Windows.
+- No open `severity/p0` issues in milestone scope.
+- CI required checks are green on release candidate commit.
 
-### M2 - Closed Beta
+### M2 - Open Beta Foundations (2026-03-16 to 2026-03-29)
 
 Scope focus:
 
-- Settings UX (hotkeys, overlay behavior, provider config).
-- Local session persistence.
-- Provider adapter abstraction with at least one production-grade provider.
-- Streaming response UX and error states.
+- Settings UX (hotkeys, overlay behavior, provider setup).
+- Local session persistence baseline.
+- Provider adapter abstraction with one production-grade provider integration.
 
 Exit criteria:
 
-- Changelog and release notes are consistently produced.
-- Crash/error triage process is operating.
-- Regression suite covers the critical user path.
+- Critical user path has automated coverage across unit/integration/smoke.
+- No open `severity/p0` or `release/blocker` issues for milestone scope.
+- Changelog entries are complete and releasable.
 
-### M3 - Open Beta
+### M3 - Open Beta Hardening (2026-03-30 to 2026-04-12)
 
 Scope focus:
 
-- Onboarding and docs for BYOK setup.
-- Improved failure recovery and updater confidence.
-- Performance/usability tuning for the core loop.
+- Streaming response UX, loading states, and retry/error UX.
+- Updater reliability and failure recovery checks.
+- Performance/usability fixes on core flow.
 
 Exit criteria:
 
-- Two consecutive stable releases without critical rollback.
-- MTTR and change failure rate are within target.
-- User-facing known issues and upgrade guidance are documented.
+- Change failure rate trend is stable or improving.
+- MTTR process is exercised on at least one simulated incident.
+- No unresolved launch-blocking reliability risks in scope.
 
-### M4 - General Availability
+### M4 - Open Release Readiness (2026-04-13 to 2026-04-26)
 
 Scope focus:
 
-- Reliability and support process hardening.
-- Security/privacy baseline sign-off.
-- Clear long-term maintenance expectations.
+- Full release checklist dry-run to production standard.
+- Public documentation pass for setup/upgrade/known issues.
+- Final readiness review for stable release candidate.
 
 Exit criteria:
 
-- Stable release process is routine and repeatable.
-- Clear support policy and issue severity model are in place.
-- No unresolved launch-blocking risks in security/privacy/reliability.
+- `RELEASE_CHECKLIST.md` executed successfully for candidate.
+- No open `severity/p0` or `release/blocker` issues.
+- Stable release go/no-go decision documented with owner and timestamp.
 
 ## Release Cadence and Gates
 
 ### Beta cadence
 
-- Target cadence: weekly or biweekly.
+- Target cadence: weekly, with mandatory decision at each 2-week milestone boundary.
 - Trigger: manual `.github/workflows/release-beta.yml` run from `main`.
-- Purpose: fast validation and risk burn-down.
+- Purpose: open validation and quick feedback.
 
 Go/no-go gate:
 
-- Scope accepted for the cycle.
+- Milestone scope is frozen for release candidate.
 - CI required checks are green on release commit.
-- Release notes drafted from merged changes.
+- Changelog and release notes are ready.
 - Smoke test on packaged app passes.
 
 ### Stable cadence
 
-- Target cadence: every 4 weeks (or when milestone criteria are met).
+- Stable decision point: every milestone boundary (every 2 weeks).
+- Stable publish target: at least once every 4 weeks if quality gates pass.
 - Trigger: push `vX.Y.Z` tag to `main` commit.
-- Purpose: predictable user-facing increments.
 
 Go/no-go gate:
 
-- All milestone must-have issues are closed.
-- No open `P0`/`P1` blockers.
-- Changelog updated and version numbers aligned.
-- Rollback path and owner confirmed.
+- No open `severity/p0`, `severity/p1`, or `release/blocker` issues.
+- Version numbers are aligned (`package.json`, `src-tauri/Cargo.toml`, `src-tauri/tauri.conf.json`).
+- Rollback owner and path are confirmed.
 
-## Versioning and Changelog Policy
+## Metrics
 
-- Follow SemVer for stable tags.
-- Use prerelease markers for beta planning and notes.
-- Keep app version aligned across:
-  - `package.json`;
-  - `src-tauri/Cargo.toml`;
-  - `src-tauri/tauri.conf.json`.
-- Publish `CHANGELOG.md` with sections: `Added`, `Changed`, `Fixed`, `Security`.
-
-## Metrics (baseline and targets)
-
-Track per release cycle:
+Track per milestone:
 
 - Deployment frequency (`beta`, `stable`).
 - Lead time for changes (PR open to release).
-- Change failure rate (releases requiring urgent fix or rollback).
-- MTTR (time from incident detection to mitigation).
-- Product quality indicators:
-  - crash-free sessions (if telemetry is enabled);
-  - critical user flow pass rate (`hotkey -> capture -> ask -> answer`).
+- Change failure rate.
+- MTTR.
+- Critical flow pass rate (`hotkey -> screenshot -> attach -> ask -> answer`).
 
-Initial target direction:
+Target direction:
 
-- `beta`: at least 2 releases per month.
-- `stable`: at least 1 release per month once M2 is reached.
-- MTTR: under 48 hours for `P1` incidents.
+- `beta`: 2 to 4 releases per month.
+- `stable`: at least 1 release per month after milestone quality stabilizes.
+- MTTR: under 48 hours for `severity/p1` incidents.
 
-## Operating Rhythm
+## Next Actions (next 2 weeks)
 
-Weekly:
+1. Reassign open issues to `M1..M4` with explicit milestone ownership.
+2. Ensure each bug in active milestone has both `severity/*` and `release/*` labels.
+3. Start first milestone metrics snapshot at M1 close (`2026-03-15`).
+4. Run first public milestone review and publish summary after M1.
 
-- Milestone board triage (`Now` lane only).
-- Beta go/no-go check and publish decision.
+## Review Rules
 
-Biweekly:
-
-- Roadmap review: scope changes, risks, dependencies.
-
-Monthly:
-
-- Stable release decision.
-- Post-release review with metric snapshot.
-
-## Immediate Actions (next 2 weeks)
-
-1. Create GitHub milestones for `M1`, `M2`, `M3`, `M4` with target windows and owners.
-2. Add `CHANGELOG.md` template and enforce changelog updates in PR checklist.
-3. Add `RELEASE_CHECKLIST.md` with beta/stable go/no-go and rollback steps.
-4. Add a script or documented process to bump version consistently in the three version files.
-5. Define issue labels for severity (`P0`..`P3`) and release blocking.
-
-## Review and Update Rules
-
-- Update this roadmap at least once per month or after each major milestone decision.
-- Avoid editing past milestones retroactively except for factual corrections.
-- Capture scope changes in a dated "Decision Log" section when major scope shifts happen.
+- Update this roadmap at each milestone boundary (every 2 weeks).
+- Record major scope/policy changes with exact date in this file.
