@@ -5,8 +5,8 @@ Use this checklist for every release in `overlay-core`.
 ## Scope
 
 - Applies to both release channels:
-- `beta` via `.github/workflows/release-beta.yml`
-- `stable` via `.github/workflows/release-stable.yml`
+  - `beta` via `.github/workflows/release-beta.yml`
+  - `stable` via `.github/workflows/release-stable.yml`
 - Release owner is responsible for go/no-go decision, execution, and post-release verification.
 
 ## Shared Preconditions (all releases)
@@ -16,8 +16,8 @@ Use this checklist for every release in `overlay-core`.
 - `CHANGELOG.md` is updated for user-facing changes (or explicitly marked N/A).
 - Updater signing secrets are present in repository settings.
 - Local sanity checks pass:
-- `npm run check`
-- `cargo check --manifest-path src-tauri/Cargo.toml`
+  - `npm run check`
+  - `cargo check --manifest-path src-tauri/Cargo.toml`
 
 ## Beta Release (`beta` tag)
 
@@ -48,18 +48,20 @@ Go/no-go:
 - Milestone must-have issues are closed.
 - No open `P0`/`P1` issues.
 - Version numbers are aligned in:
-- `package.json`
-- `src-tauri/Cargo.toml`
-- `src-tauri/tauri.conf.json`
+  - `package.json`
+  - `src-tauri/Cargo.toml`
+  - `src-tauri/tauri.conf.json`
 - `CHANGELOG.md` includes finalized entries for the target version.
 
 Execution:
 
 1. Sync and verify local `main`.
-2. Create annotated tag: `git tag -a vX.Y.Z -m "overlay-core vX.Y.Z"`.
-3. Push tag: `git push origin vX.Y.Z`.
-4. Wait for `Release Stable` workflow to complete on Linux and Windows.
-5. Confirm release `vX.Y.Z` contains expected artifacts and `latest.json`.
+2. Bump versions with one command: `npm run version:bump -- X.Y.Z`.
+3. Commit version and changelog updates on `main` via regular PR process.
+4. Create annotated tag: `git tag -a vX.Y.Z -m "overlay-core vX.Y.Z"`.
+5. Push tag: `git push origin vX.Y.Z`.
+6. Wait for `Release Stable` workflow to complete on Linux and Windows.
+7. Confirm release `vX.Y.Z` contains expected artifacts and `latest.json`.
 
 Post-release verification:
 

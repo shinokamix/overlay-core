@@ -142,6 +142,7 @@ npm run tauri dev
 - `npm run test:ci` - run tests in CI-safe mode
 - `npm run test:watch` - run Vitest in watch mode
 - `npm run test:coverage` - generate coverage report
+- `npm run version:bump -- <version>` - sync app version in `package.json`, `src-tauri/Cargo.toml`, and `src-tauri/tauri.conf.json`
 - `npm run e2e` - run Playwright tests
 - `npm run e2e:ui` - run Playwright UI mode
 - `npm run e2e:install` - install Playwright Chromium + deps
