@@ -30,6 +30,8 @@ Implemented:
 - App-level state (Zustand) and query layer (TanStack Query)
 - Runtime env parsing/validation with `zod`
 - Global React `ErrorBoundary` and shared logger abstraction
+- Global hotkey runtime with default overlay visibility toggle (`Ctrl+Shift+Space`)
+- In-app hotkey settings panel for overlay toggle + one-click Hyprland bind apply
 - ESLint + Prettier + Husky + lint-staged quality gates
 - Vitest + RTL tests (unit + integration)
 - Playwright smoke-test baseline
@@ -39,7 +41,7 @@ Implemented:
 
 Not implemented yet (next milestones):
 
-- Global hotkeys (show/hide overlay)
+- Persistence for user-configurable hotkeys between app launches
 - Draggable overlay behavior
 - Screen capture and attachment draft queue
 - Chat timeline and composer
@@ -162,6 +164,17 @@ npm run tauri dev
 - `npm run e2e` - run Playwright tests
 - `npm run e2e:ui` - run Playwright UI mode
 - `npm run e2e:install` - install Playwright Chromium + deps
+
+## Linux / Hyprland Hotkey Note
+
+- On Linux, Tauri global shortcut backend works through X11.
+- On pure Wayland sessions (including Hyprland), compositor-level bind is more reliable.
+- Preferred path: open `Settings -> Hotkeys` and click `Apply to Hyprland`.
+- Manual fallback uses the app CLI toggle argument:
+
+```ini
+bind = CTRL SHIFT, SPACE, exec, overlay-core --toggle-overlay
+```
 
 ## Git Hooks
 

@@ -10,7 +10,10 @@ for stable releases.
 
 ### Added
 
-- _Nothing yet._
+- Global overlay hotkey support with default `Ctrl+Shift+Space` to hide/show the main overlay window.
+- Tauri hotkey bindings API scaffolding (`get_hotkey_bindings` / `update_hotkey_binding`) for upcoming user-configurable shortcuts in Settings.
+- Single-instance CLI toggle entrypoint (`overlay-core --toggle-overlay`) to support compositor-managed binds on Wayland/Hyprland.
+- Hotkeys settings panel in app UI with editable toggle shortcut and one-click `Apply to Hyprland` workflow (writes bind file, ensures source include, reloads Hyprland).
 
 ### Changed
 
