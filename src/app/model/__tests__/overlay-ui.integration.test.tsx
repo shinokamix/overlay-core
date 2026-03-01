@@ -18,6 +18,7 @@ describe("App", () => {
     const user = userEvent.setup();
     renderApp();
 
+    expect(screen.getByText("Hotkeys")).toBeInTheDocument();
     const button = screen.getByRole("button", { name: /hide overlay/i });
     expect(
       screen.getByText((_, element) => element?.textContent === "Overlay state: visible"),
