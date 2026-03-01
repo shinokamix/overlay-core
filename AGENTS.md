@@ -54,6 +54,8 @@ During implementation:
 - Prefer reading architecture context first: `README.md`, `ARCHITECTURE.md`, and nearest local docs.
 - For risky edits, run targeted checks first, then run required full checks.
 - Do not make unrelated refactors in the same task branch.
+- Keep commits atomic: one logical change per commit with a clear message.
+- Do not mix unrelated changes in a single commit.
 
 At task finish, report:
 
@@ -90,6 +92,7 @@ Changes should not introduce failures in CI checks:
 
 - `pre-commit`: `lint-staged` (Prettier + ESLint on staged files)
 - `pre-push`: `npm run prepush:verify` (typecheck + test)
+- Commit structure: prefer a small sequence of atomic commits over one large mixed commit.
 
 ## Coding rules
 

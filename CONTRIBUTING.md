@@ -18,9 +18,10 @@ cargo check --manifest-path src-tauri/Cargo.toml
 
 1. Start every new task in a fresh branch created from `main`.
 2. Make focused changes.
-3. Run local checks.
-4. Open a PR with a clear scope and rationale.
-5. Merge only after required CI checks pass.
+3. Create atomic commits (one logical change per commit).
+4. Run local checks.
+5. Open a PR with a clear scope and rationale.
+6. Merge only after required CI checks pass.
 
 Branch policy is strict:
 
@@ -71,6 +72,7 @@ cargo check --manifest-path src-tauri/Cargo.toml
 
 - `pre-commit`: runs `lint-staged` (Prettier + ESLint on staged files)
 - `pre-push`: runs `npm run prepush:verify` (`typecheck + test`)
+- Keep commits atomic: each commit should represent one logical change and should not mix unrelated edits.
 
 ## Coding rules
 
