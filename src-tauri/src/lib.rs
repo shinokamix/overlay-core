@@ -14,6 +14,8 @@ fn apply_overlay_flag(flag: &str, result: tauri::Result<()>) {
 
 #[cfg(desktop)]
 fn configure_overlay_window(window: &WebviewWindow) {
+    apply_overlay_flag("decorations", window.set_decorations(false));
+    apply_overlay_flag("minimizable", window.set_minimizable(false));
     apply_overlay_flag("always_on_top", window.set_always_on_top(true));
     apply_overlay_flag("content_protected", window.set_content_protected(true));
     apply_overlay_flag("skip_taskbar", window.set_skip_taskbar(true));

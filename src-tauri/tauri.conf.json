@@ -17,6 +17,8 @@
         "title": "overlay-core",
         "width": 800,
         "height": 600,
+        "decorations": false,
+        "minimizable": false,
         "alwaysOnTop": true,
         "visibleOnAllWorkspaces": true,
         "contentProtected": true,
