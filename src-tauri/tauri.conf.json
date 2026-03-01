@@ -13,9 +13,16 @@
     "withGlobalTauri": true,
     "windows": [
       {
+        "label": "main",
         "title": "overlay-core",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "decorations": false,
+        "minimizable": false,
+        "alwaysOnTop": true,
+        "visibleOnAllWorkspaces": true,
+        "contentProtected": true,
+        "skipTaskbar": true
       }
     ],
     "security": {
