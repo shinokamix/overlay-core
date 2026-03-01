@@ -14,7 +14,7 @@ for stable releases.
 
 ### Changed
 
-- _Nothing yet._
+- Main Tauri window now starts in overlay mode: always on top, hidden from taskbar, visible across workspaces where supported, and marked as content-protected to stay out of screen capture on supported platforms.
 
 ### Fixed
 
