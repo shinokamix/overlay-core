@@ -15,6 +15,7 @@ for stable releases.
 ### Changed
 
 - Main Tauri window now starts in overlay mode: always on top, hidden from taskbar, visible across workspaces where supported, and marked as content-protected to stay out of screen capture on supported platforms.
+- On Linux/Hyprland, runtime `hyprctl` dispatch is applied to force the app window into `floating + pinned` state and enable `no_screen_share`, so overlay behavior works under Wayland compositing limits.
 
 ### Fixed
 
