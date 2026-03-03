@@ -6,18 +6,3 @@ export type HotkeyBinding = {
   action: HotkeyAction;
   accelerator: string;
 };
-
-export type HotkeyPlatformInfo = {
-  isLinux: boolean;
-  isWayland: boolean;
-  isHyprland: boolean;
-  supportsNativeGlobalShortcuts: boolean;
-  canAutoConfigureHyprland: boolean;
-};
-
-export type HyprlandHotkeyApplyResult = {
-  bindFilePath: string;
-  mainConfigPath: string;
-  sourceLine: string;
-  bindLine: string;
-};

@@ -2,24 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/shared/ui/button";
 import { useOverlayStore } from "@/app/model/overlay-store";
-import {
-  applyHyprlandHotkeyBinding,
-  getHotkeyBindings,
-  getHotkeyPlatformInfo,
-  updateHotkeyBinding,
-} from "@/app/model/hotkeys-api";
-import type { HotkeyPlatformInfo } from "@/shared/config/hotkeys";
+import { getHotkeyBindings, updateHotkeyBinding } from "@/app/model/hotkeys-api";
 import { isTauriRuntime } from "@/shared/config/runtime";
 
 const TOGGLE_OVERLAY_ACTION = "toggle_overlay_visibility";
-
-const DEFAULT_PLATFORM_INFO: HotkeyPlatformInfo = {
-  isLinux: false,
-  isWayland: false,
-  isHyprland: false,
-  supportsNativeGlobalShortcuts: true,
-  canAutoConfigureHyprland: false,
-};
 
 async function getMilestoneStatus() {
   return {
@@ -47,14 +33,11 @@ export default function App() {
   const isVisible = useOverlayStore((state) => state.isVisible);
   const toggleVisibility = useOverlayStore((state) => state.toggleVisibility);
 
-  const [platformInfo, setPlatformInfo] = useState<HotkeyPlatformInfo>(DEFAULT_PLATFORM_INFO);
   const [toggleHotkey, setToggleHotkey] = useState("Ctrl+Shift+Space");
   const [hotkeyStatus, setHotkeyStatus] = useState("");
   const [hotkeyError, setHotkeyError] = useState("");
-  const [hyprlandStatus, setHyprlandStatus] = useState("");
   const [isHotkeysLoading, setIsHotkeysLoading] = useState(false);
   const [isHotkeySaving, setIsHotkeySaving] = useState(false);
-  const [isHyprlandApplying, setIsHyprlandApplying] = useState(false);
 
   const tauriRuntime = isTauriRuntime();
 
@@ -69,13 +52,9 @@ export default function App() {
       setIsHotkeysLoading(true);
       setHotkeyError("");
       setHotkeyStatus("");
-      setHyprlandStatus("");
 
       try {
-        const [bindings, platform] = await Promise.all([
-          getHotkeyBindings(),
-          getHotkeyPlatformInfo(),
-        ]);
+        const bindings = await getHotkeyBindings();
 
         if (canceled) {
           return;
@@ -85,8 +64,6 @@ export default function App() {
         if (toggleBinding) {
           setToggleHotkey(toggleBinding.accelerator);
         }
-
-        setPlatformInfo(platform);
       } catch (error) {
         if (!canceled) {
           setHotkeyError(`Failed to load hotkey settings: ${toErrorMessage(error)}`);
@@ -110,16 +87,8 @@ export default function App() {
       return "Open in Tauri desktop runtime to configure hotkeys.";
     }
 
-    if (platformInfo.canAutoConfigureHyprland) {
-      return "Hyprland detected. You can apply compositor bind directly from this panel.";
-    }
-
-    if (platformInfo.isWayland && !platformInfo.supportsNativeGlobalShortcuts) {
-      return "Pure Wayland session detected. Native global shortcuts may not fire without compositor bind.";
-    }
-
-    return "Native global shortcut backend is available for this session.";
-  }, [platformInfo, tauriRuntime]);
+    return "Global shortcut backend is available in Windows desktop runtime.";
+  }, [tauriRuntime]);
 
   const { data, isLoading } = useQuery({
     queryKey: ["milestone-status"],
@@ -141,7 +110,6 @@ export default function App() {
     setIsHotkeySaving(true);
     setHotkeyError("");
     setHotkeyStatus("");
-    setHyprlandStatus("");
 
     try {
       await updateHotkeyBinding(TOGGLE_OVERLAY_ACTION, nextHotkey);
@@ -151,38 +119,6 @@ export default function App() {
       setHotkeyError(`Failed to save hotkey: ${toErrorMessage(error)}`);
     } finally {
       setIsHotkeySaving(false);
-    }
-  }
-
-  async function handleApplyHyprlandBind() {
-    if (!tauriRuntime) {
-      setHotkeyError("Hyprland apply is available only in desktop runtime.");
-      return;
-    }
-
-    const nextHotkey = toggleHotkey.trim();
-    if (!nextHotkey) {
-      setHotkeyError("Hotkey cannot be empty.");
-      return;
-    }
-
-    setIsHyprlandApplying(true);
-    setHotkeyError("");
-    setHotkeyStatus("");
-    setHyprlandStatus("");
-
-    try {
-      await updateHotkeyBinding(TOGGLE_OVERLAY_ACTION, nextHotkey);
-      setToggleHotkey(nextHotkey);
-      const result = await applyHyprlandHotkeyBinding(TOGGLE_OVERLAY_ACTION);
-      setHotkeyStatus(`Hotkey saved: ${nextHotkey}`);
-      setHyprlandStatus(
-        `Applied to Hyprland: ${result.bindFilePath}. Source line: ${result.sourceLine}`,
-      );
-    } catch (error) {
-      setHotkeyError(`Failed to apply Hyprland bind: ${toErrorMessage(error)}`);
-    } finally {
-      setIsHyprlandApplying(false);
     }
   }
 
@@ -229,21 +165,10 @@ export default function App() {
             >
               {isHotkeySaving ? "Saving..." : "Save hotkey"}
             </Button>
-
-            <Button
-              variant="secondary"
-              onClick={handleApplyHyprlandBind}
-              disabled={!platformInfo.canAutoConfigureHyprland || isHyprlandApplying}
-            >
-              {isHyprlandApplying ? "Applying..." : "Apply to Hyprland"}
-            </Button>
           </div>
 
           {hotkeyStatus ? (
             <p className="mt-3 text-xs text-muted-foreground">{hotkeyStatus}</p>
-          ) : null}
-          {hyprlandStatus ? (
-            <p className="mt-2 text-xs text-muted-foreground">{hyprlandStatus}</p>
           ) : null}
           {hotkeyError ? <p className="mt-2 text-xs text-destructive">{hotkeyError}</p> : null}
         </section>

@@ -4,7 +4,7 @@ Local-first desktop AI overlay: capture screen context, attach multiple screensh
 
 ## Product Vision
 
-`overlay-core` is the open-core desktop foundation of a cross-platform AI overlay app.
+`overlay-core` is the open-core desktop foundation of a Windows-first AI overlay app.
 
 Core idea:
 
@@ -31,7 +31,7 @@ Implemented:
 - Runtime env parsing/validation with `zod`
 - Global React `ErrorBoundary` and shared logger abstraction
 - Global hotkey runtime with default overlay visibility toggle (`Ctrl+Shift+Space`)
-- In-app hotkey settings panel for overlay toggle + one-click Hyprland bind apply
+- In-app hotkey settings panel for overlay toggle
 - ESLint + Prettier + Husky + lint-staged quality gates
 - Vitest + RTL tests (unit + integration)
 - Playwright smoke-test baseline
@@ -125,7 +125,8 @@ Requirements:
 - Node.js 20+
 - npm 10+
 - Rust stable toolchain
-- Linux dev: Tauri system dependencies (webkit/appindicator/rsvg/patchelf)
+- Windows 10/11 for Tauri desktop runtime
+- Non-Windows desktop builds are intentionally blocked at compile time
 
 Install:
 
@@ -163,18 +164,7 @@ npm run tauri dev
 - `npm run version:bump -- <version>` - sync app version in `package.json`, `src-tauri/Cargo.toml`, and `src-tauri/tauri.conf.json`
 - `npm run e2e` - run Playwright tests
 - `npm run e2e:ui` - run Playwright UI mode
-- `npm run e2e:install` - install Playwright Chromium + deps
-
-## Linux / Hyprland Hotkey Note
-
-- On Linux, Tauri global shortcut backend works through X11.
-- On pure Wayland sessions (including Hyprland), compositor-level bind is more reliable.
-- Preferred path: open `Settings -> Hotkeys` and click `Apply to Hyprland`.
-- Manual fallback uses the app CLI toggle argument:
-
-```ini
-bind = CTRL SHIFT, SPACE, exec, overlay-core --toggle-overlay
-```
+- `npm run e2e:install` - install Playwright Chromium
 
 ## Git Hooks
 
@@ -225,7 +215,7 @@ Workflows:
 
 - `.github/workflows/release-beta.yml` - manual beta publish, updates `beta` prerelease tag
 - `.github/workflows/release-stable.yml` - stable publish on `vX.Y.Z` tag push
-- current release matrix: Linux + Windows only (macOS release jobs are disabled)
+- current release matrix: Windows only (macOS release jobs are disabled)
 - release operation checklist: [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md)
 
 ### Required GitHub secrets
