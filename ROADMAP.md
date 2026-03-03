@@ -1,6 +1,6 @@
 # overlay-core Roadmap and Release Plan (2026)
 
-_Last updated: 2026-02-28_
+_Last updated: 2026-03-03_
 
 ## Direction Update
 
@@ -61,7 +61,7 @@ Scope focus:
 
 Exit criteria:
 
-- Core flow works on Linux and Windows.
+- Core flow works on Windows.
 - No open `severity/p0` issues in milestone scope.
 - CI required checks are green on release candidate commit.
 

@@ -31,13 +31,13 @@ Execution:
 
 1. Ensure local `main` is up to date.
 2. Open GitHub Actions and run `Release Beta` from `main`.
-3. Wait for both matrix builds (Linux and Windows) to finish.
-4. Verify GitHub prerelease `beta` has fresh artifacts for both platforms.
+3. Wait for the Windows build to finish.
+4. Verify GitHub prerelease `beta` has fresh Windows artifacts.
 5. Verify updater artifact `latest.json` is present under `beta` release assets.
 
 Post-release verification:
 
-- Install or update from beta channel on at least one Linux and one Windows machine.
+- Install or update from beta channel on at least one Windows machine.
 - Perform smoke flow: launch app, show/hide overlay, basic UI interaction.
 - Monitor issues/crash reports for 24 hours and triage within severity SLA.
 
@@ -60,13 +60,13 @@ Execution:
 3. Commit version and changelog updates on `main` via regular PR process.
 4. Create annotated tag: `git tag -a vX.Y.Z -m "overlay-core vX.Y.Z"`.
 5. Push tag: `git push origin vX.Y.Z`.
-6. Wait for `Release Stable` workflow to complete on Linux and Windows.
+6. Wait for `Release Stable` workflow to complete on Windows.
 7. Confirm release `vX.Y.Z` contains expected artifacts and `latest.json`.
 
 Post-release verification:
 
 - Validate updater endpoint serves the new `latest.json`.
-- Verify installation/update on Linux and Windows.
+- Verify installation/update on Windows.
 - Publish release notes and known issues summary.
 
 ## Rollback / Hotfix Playbook
@@ -94,5 +94,5 @@ For each release, capture:
 - release owner;
 - go/no-go timestamp;
 - link to workflow run;
-- verification result (Linux, Windows);
+- verification result (Windows);
 - follow-up issues created.

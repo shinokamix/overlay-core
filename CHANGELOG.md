@@ -12,13 +12,17 @@ for stable releases.
 
 - Global overlay hotkey support with default `Ctrl+Shift+Space` to hide/show the main overlay window.
 - Tauri hotkey bindings API scaffolding (`get_hotkey_bindings` / `update_hotkey_binding`) for upcoming user-configurable shortcuts in Settings.
-- Single-instance CLI toggle entrypoint (`overlay-core --toggle-overlay`) to support compositor-managed binds on Wayland/Hyprland.
-- Hotkeys settings panel in app UI with editable toggle shortcut and one-click `Apply to Hyprland` workflow (writes bind file, ensures source include, reloads Hyprland).
+- Single-instance CLI toggle entrypoint (`overlay-core --toggle-overlay`) to trigger visibility toggle in existing app instance.
+- Hotkeys settings panel in app UI with editable toggle shortcut.
 
 ### Changed
 
 - Main Tauri window now starts in overlay mode: undecorated (no native titlebar/buttons), non-minimizable, always on top, hidden from taskbar, visible across workspaces where supported, and marked as content-protected to stay out of screen capture on supported platforms.
-- On Linux/Hyprland, runtime `hyprctl` dispatch is applied to force the app window into `floating + pinned` state and enable `no_screen_share`, so overlay behavior works under Wayland compositing limits.
+- The desktop target is now Windows-only, and non-Windows builds fail at compile time.
+
+### Removed
+
+- Linux support and Hyprland-specific hotkey/app window flows.
 
 ### Fixed
 
