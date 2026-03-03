@@ -81,21 +81,12 @@ jobs:
 
   rust-tauri:
     name: Rust / Tauri Checks
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 25
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install Linux dependencies for Tauri
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libwebkit2gtk-4.1-dev \
-            libappindicator3-dev \
-            librsvg2-dev \
-            patchelf
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
