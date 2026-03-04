@@ -9,8 +9,10 @@
 ## Current modules
 
 - `src/app/main.tsx`: app bootstrap and providers
-- `src/app/App.tsx`: current shell UI
-- `src/app/model`: app-level state (`overlay-store`)
+- `src/app/App.tsx`: shell layout and feature composition
+- `src/app/model`: app-level state and shell hooks (`overlay-store`, window size sync)
+- `src/features/hotkey-settings`: loading/updating desktop hotkey bindings
+- `src/features/overlay-interaction`: interaction mode sync and toggle flow
 - `src/shared/config`: runtime environment parsing/validation
 - `src/shared/lib`: shared infrastructure (`query-client`, `logger`, `utils`)
 - `src/shared/ui`: reusable UI primitives (shadcn-based)

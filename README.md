@@ -32,6 +32,7 @@ Implemented:
 - Global React `ErrorBoundary` and shared logger abstraction
 - Global hotkey runtime with default overlay visibility toggle (`Ctrl+Shift+Space`)
 - In-app hotkey settings panel for overlay toggle
+- Frontend feature slices for hotkey settings and overlay interaction (FSD-oriented)
 - ESLint + Prettier + Husky + lint-staged quality gates
 - Vitest + RTL tests (unit + integration)
 - Playwright smoke-test baseline
@@ -104,6 +105,9 @@ and [`AGENTS.md`](./AGENTS.md).
 │   │   ├── App.tsx
 │   │   ├── main.tsx
 │   │   └── styles.css
+│   ├── features
+│   │   ├── hotkey-settings
+│   │   └── overlay-interaction
 │   ├── shared
 │   │   ├── config
 │   │   ├── lib
