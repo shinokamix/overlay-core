@@ -14,21 +14,22 @@ function renderApp() {
 }
 
 describe("App", () => {
-  it("shows passive interaction mode by default", async () => {
+  it("renders chat shell and settings modal flow", async () => {
     const user = userEvent.setup();
     renderApp();
 
-    expect(screen.getByText("Hotkeys")).toBeInTheDocument();
-    const button = screen.getByRole("button", { name: /unlock interaction/i });
-    expect(button).toBeDisabled();
-    expect(
-      screen.getByText((_, element) => element?.textContent === "Interaction mode: passive"),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /ai chat mock/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /send/i })).toBeInTheDocument();
 
-    await user.click(button);
+    await user.click(screen.getByRole("button", { name: /settings/i }));
+    expect(screen.getByRole("dialog", { name: /settings/i })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /^close$/i }));
+    expect(screen.queryByRole("dialog", { name: /settings/i })).not.toBeInTheDocument();
 
-    expect(
-      screen.getByText((_, element) => element?.textContent === "Interaction mode: passive"),
-    ).toBeInTheDocument();
+    await user.type(screen.getByRole("textbox", { name: /message/i }), "hello");
+    await user.click(screen.getByRole("button", { name: /send/i }));
+
+    expect(screen.getByText("hello")).toBeInTheDocument();
+    expect(screen.getByText(/mock response:/i)).toBeInTheDocument();
   });
 });
