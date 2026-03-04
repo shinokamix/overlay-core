@@ -14,21 +14,21 @@ function renderApp() {
 }
 
 describe("App", () => {
-  it("toggles overlay visibility", async () => {
+  it("shows passive interaction mode by default", async () => {
     const user = userEvent.setup();
     renderApp();
 
     expect(screen.getByText("Hotkeys")).toBeInTheDocument();
-    const button = screen.getByRole("button", { name: /hide overlay/i });
+    const button = screen.getByRole("button", { name: /unlock interaction/i });
+    expect(button).toBeDisabled();
     expect(
-      screen.getByText((_, element) => element?.textContent === "Overlay state: visible"),
+      screen.getByText((_, element) => element?.textContent === "Interaction mode: passive"),
     ).toBeInTheDocument();
 
     await user.click(button);
 
-    expect(screen.getByRole("button", { name: /show overlay/i })).toBeInTheDocument();
     expect(
-      screen.getByText((_, element) => element?.textContent === "Overlay state: hidden"),
+      screen.getByText((_, element) => element?.textContent === "Interaction mode: passive"),
     ).toBeInTheDocument();
   });
 });
