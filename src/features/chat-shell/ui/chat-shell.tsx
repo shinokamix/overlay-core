@@ -6,6 +6,11 @@ export function ChatShell() {
 
   return (
     <section className="flex flex-1 flex-col gap-3">
+      <div>
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Overlay Chat</p>
+        <h1 className="text-2xl font-semibold tracking-tight">AI chat mock</h1>
+      </div>
+
       <ul className="flex max-h-72 min-h-56 flex-col gap-3 overflow-y-auto rounded-xl border border-border/70 bg-muted/30 p-3">
         {messages.map((message) => (
           <li
