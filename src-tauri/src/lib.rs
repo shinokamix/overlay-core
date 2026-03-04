@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 #[cfg(desktop)]
 use std::{collections::HashMap, sync::Mutex};
 #[cfg(desktop)]
-use tauri::{AppHandle, Manager, WebviewWindow};
+use tauri::{AppHandle, Emitter, Manager, WebviewWindow};
 #[cfg(desktop)]
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 
@@ -12,17 +12,25 @@ const MAIN_WINDOW_LABEL: &str = "main";
 #[cfg(desktop)]
 const DEFAULT_TOGGLE_OVERLAY_SHORTCUT: &str = "Ctrl+Shift+Space";
 #[cfg(desktop)]
+const DEFAULT_TOGGLE_INTERACTIVITY_SHORTCUT: &str = "Ctrl+Shift+Enter";
+#[cfg(desktop)]
 const TOGGLE_OVERLAY_CLI_ARG: &str = "--toggle-overlay";
+#[cfg(desktop)]
+const OVERLAY_INTERACTION_CHANGED_EVENT: &str = "overlay://interaction-changed";
 
 #[cfg(desktop)]
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 enum HotkeyAction {
     ToggleOverlayVisibility,
+    ToggleOverlayInteractivity,
 }
 
 #[cfg(desktop)]
-const SUPPORTED_HOTKEY_ACTIONS: [HotkeyAction; 1] = [HotkeyAction::ToggleOverlayVisibility];
+const SUPPORTED_HOTKEY_ACTIONS: [HotkeyAction; 2] = [
+    HotkeyAction::ToggleOverlayVisibility,
+    HotkeyAction::ToggleOverlayInteractivity,
+];
 
 #[cfg(desktop)]
 #[derive(Clone, Debug, Serialize)]
@@ -37,12 +45,21 @@ struct HotkeyBindingsState {
 }
 
 #[cfg(desktop)]
+struct OverlayRuntimeState {
+    interaction_enabled: Mutex<bool>,
+}
+
+#[cfg(desktop)]
 impl HotkeyBindingsState {
     fn with_defaults() -> Self {
         let mut bindings = HashMap::new();
         bindings.insert(
             HotkeyAction::ToggleOverlayVisibility,
             DEFAULT_TOGGLE_OVERLAY_SHORTCUT.to_string(),
+        );
+        bindings.insert(
+            HotkeyAction::ToggleOverlayInteractivity,
+            DEFAULT_TOGGLE_INTERACTIVITY_SHORTCUT.to_string(),
         );
 
         Self {
@@ -81,9 +98,33 @@ impl HotkeyBindingsState {
 }
 
 #[cfg(desktop)]
+impl OverlayRuntimeState {
+    fn with_defaults() -> Self {
+        Self {
+            interaction_enabled: Mutex::new(false),
+        }
+    }
+
+    fn get(&self) -> bool {
+        *self
+            .interaction_enabled
+            .lock()
+            .expect("overlay runtime lock poisoned")
+    }
+
+    fn set(&self, enabled: bool) {
+        *self
+            .interaction_enabled
+            .lock()
+            .expect("overlay runtime lock poisoned") = enabled;
+    }
+}
+
+#[cfg(desktop)]
 fn hotkey_action_key(action: HotkeyAction) -> &'static str {
     match action {
         HotkeyAction::ToggleOverlayVisibility => "toggle_overlay_visibility",
+        HotkeyAction::ToggleOverlayInteractivity => "toggle_overlay_interactivity",
     }
 }
 
@@ -109,7 +150,9 @@ fn apply_overlay_flag(flag: &str, result: tauri::Result<()>) {
 #[cfg(desktop)]
 fn configure_overlay_window(window: &WebviewWindow) {
     apply_overlay_flag("decorations", window.set_decorations(false));
+    apply_overlay_flag("resizable", window.set_resizable(false));
     apply_overlay_flag("minimizable", window.set_minimizable(false));
+    apply_overlay_flag("shadow", window.set_shadow(false));
     apply_overlay_flag("always_on_top", window.set_always_on_top(true));
     apply_overlay_flag("content_protected", window.set_content_protected(true));
     apply_overlay_flag("skip_taskbar", window.set_skip_taskbar(true));
@@ -117,6 +160,35 @@ fn configure_overlay_window(window: &WebviewWindow) {
         "visible_on_all_workspaces",
         window.set_visible_on_all_workspaces(true),
     );
+}
+
+#[cfg(desktop)]
+fn emit_overlay_interaction_changed(app: &AppHandle, enabled: bool) {
+    if let Err(error) = app.emit(OVERLAY_INTERACTION_CHANGED_EVENT, enabled) {
+        eprintln!("failed to emit overlay interaction event: {error}");
+    }
+}
+
+#[cfg(desktop)]
+fn set_overlay_interaction_enabled(app: &AppHandle, enabled: bool) -> Result<bool, String> {
+    let overlay_state = app.state::<OverlayRuntimeState>();
+    overlay_state.set(enabled);
+
+    if let Some(window) = app.get_webview_window(MAIN_WINDOW_LABEL) {
+        window
+            .set_ignore_cursor_events(!enabled)
+            .map_err(|error| format!("failed to set overlay cursor behavior: {error}"))?;
+    }
+
+    emit_overlay_interaction_changed(app, enabled);
+
+    Ok(enabled)
+}
+
+#[cfg(desktop)]
+fn toggle_overlay_interaction_enabled(app: &AppHandle) -> Result<bool, String> {
+    let next = !app.state::<OverlayRuntimeState>().get();
+    set_overlay_interaction_enabled(app, next)
 }
 
 #[cfg(desktop)]
@@ -130,6 +202,10 @@ fn toggle_overlay_visibility(app: &AppHandle) -> Result<(), String> {
         .map_err(|error| format!("failed to read overlay visibility: {error}"))?;
 
     if is_visible {
+        if let Err(error) = set_overlay_interaction_enabled(app, false) {
+            eprintln!("failed to lock overlay interaction before hide: {error}");
+        }
+
         window
             .hide()
             .map_err(|error| format!("failed to hide overlay window: {error}"))?;
@@ -140,9 +216,10 @@ fn toggle_overlay_visibility(app: &AppHandle) -> Result<(), String> {
 
         configure_overlay_window(&window);
 
-        if let Err(error) = window.set_focus() {
-            eprintln!("failed to focus overlay window after show: {error}");
-        }
+        let interaction_enabled = app.state::<OverlayRuntimeState>().get();
+        window
+            .set_ignore_cursor_events(!interaction_enabled)
+            .map_err(|error| format!("failed to apply overlay cursor behavior: {error}"))?;
     }
 
     Ok(())
@@ -152,7 +229,28 @@ fn toggle_overlay_visibility(app: &AppHandle) -> Result<(), String> {
 fn run_hotkey_action(app: &AppHandle, action: HotkeyAction) -> Result<(), String> {
     match action {
         HotkeyAction::ToggleOverlayVisibility => toggle_overlay_visibility(app),
+        HotkeyAction::ToggleOverlayInteractivity => {
+            toggle_overlay_interaction_enabled(app).map(|_| ())
+        }
     }
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn get_overlay_interaction_enabled(runtime_state: tauri::State<'_, OverlayRuntimeState>) -> bool {
+    runtime_state.get()
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn set_overlay_interaction_enabled_command(app: AppHandle, enabled: bool) -> Result<bool, String> {
+    set_overlay_interaction_enabled(&app, enabled)
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn toggle_overlay_interaction_enabled_command(app: AppHandle) -> Result<bool, String> {
+    toggle_overlay_interaction_enabled(&app)
 }
 
 #[cfg(desktop)]
@@ -265,7 +363,10 @@ pub fn run() {
         }))
         .invoke_handler(tauri::generate_handler![
             get_hotkey_bindings,
-            update_hotkey_binding
+            update_hotkey_binding,
+            get_overlay_interaction_enabled,
+            set_overlay_interaction_enabled_command,
+            toggle_overlay_interaction_enabled_command
         ]);
 
     builder
@@ -273,6 +374,7 @@ pub fn run() {
             #[cfg(desktop)]
             {
                 app.manage(HotkeyBindingsState::with_defaults());
+                app.manage(OverlayRuntimeState::with_defaults());
 
                 app.handle()
                     .plugin(tauri_plugin_updater::Builder::new().build())?;
@@ -286,6 +388,10 @@ pub fn run() {
 
                 if let Some(window) = app.get_webview_window(MAIN_WINDOW_LABEL) {
                     configure_overlay_window(&window);
+                    apply_overlay_flag(
+                        "ignore_cursor_events",
+                        window.set_ignore_cursor_events(true),
+                    );
                 } else {
                     eprintln!("main window not found: overlay flags were not applied");
                 }

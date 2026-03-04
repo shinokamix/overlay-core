@@ -15,8 +15,11 @@
       {
         "label": "main",
         "title": "overlay-core",
-        "width": 800,
-        "height": 600,
+        "width": 520,
+        "height": 280,
+        "transparent": true,
+        "resizable": false,
+        "shadow": false,
         "decorations": false,
         "minimizable": false,
         "alwaysOnTop": true,
