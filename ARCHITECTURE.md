@@ -16,6 +16,16 @@
 - `src/shared/ui`: reusable UI primitives (shadcn-based)
 - `src-tauri`: native runtime and capabilities
 
+### Tauri backend modules (`src-tauri/src`)
+
+- `app/bootstrap`: Tauri builder wiring, plugin setup, startup flow
+- `app/commands`: centralized command export for `invoke_handler`
+- `app/state`: app-managed runtime state registration
+- `app/events`: backend event channel names
+- `features/hotkeys`: hotkey models, state, commands, and registration/update services
+- `features/overlay`: overlay window/runtime state, commands, and interaction/visibility services
+- `shared/constants`: backend constants shared across features
+
 ## Architectural constraints
 
 - `app` may depend on `features` and `shared`.
