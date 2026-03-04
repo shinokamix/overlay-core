@@ -1,98 +1,94 @@
 # Release Checklist
 
-Use this checklist for every release in `overlay-core`.
+Use this checklist for every `beta` and `stable` release.
 
-## Scope
+## Shared preflight (all releases)
 
-- Applies to both release channels:
-  - `beta` via `.github/workflows/release-beta.yml`
-  - `stable` via `.github/workflows/release-stable.yml`
-- Release owner is responsible for go/no-go decision, execution, and post-release verification.
+- [ ] Release owner is assigned.
+- [ ] Target commit is on `main` with green required CI.
+- [ ] No open release-blocking issues in scope.
+- [ ] `CHANGELOG.md` is updated (or explicitly N/A).
+- [ ] Updater signing secrets are present.
+- [ ] Local checks pass:
+  - [ ] `npm run check`
+  - [ ] `cargo check --manifest-path src-tauri/Cargo.toml`
 
-## Shared Preconditions (all releases)
-
-- Target commit is on `main` and has green required CI (`CI (required)`).
-- No open release-blocking issues for the selected scope.
-- `CHANGELOG.md` is updated for user-facing changes (or explicitly marked N/A).
-- Updater signing secrets are present in repository settings.
-- Local sanity checks pass:
-  - `npm run check`
-  - `cargo check --manifest-path src-tauri/Cargo.toml`
-
-## Beta Release (`beta` tag)
+## Beta release (`beta` tag)
 
 Go/no-go:
 
-- Scope for the cycle is frozen.
-- No known `P0`/`P1` regressions for the targeted beta scope.
-- Release notes are drafted from `CHANGELOG.md` and merged PRs.
+- [ ] Scope for the cycle is frozen.
+- [ ] No known `P0` or `P1` regressions in beta scope.
+- [ ] Draft release notes are ready.
 
 Execution:
 
-1. Ensure local `main` is up to date.
-2. Open GitHub Actions and run `Release Beta` from `main`.
-3. Wait for the Windows build to finish.
-4. Verify GitHub prerelease `beta` has fresh Windows artifacts.
-5. Verify updater artifact `latest.json` is present under `beta` release assets.
+- [ ] Sync local `main`.
+- [ ] Run GitHub Actions workflow: `.github/workflows/release-beta.yml` from `main`.
+- [ ] Wait for Windows build completion.
+- [ ] Verify prerelease `beta` has fresh artifacts.
+- [ ] Verify `latest.json` exists in beta assets.
 
 Post-release verification:
 
-- Install or update from beta channel on at least one Windows machine.
-- Perform smoke flow: launch app, show/hide overlay, basic UI interaction.
-- Monitor issues/crash reports for 24 hours and triage within severity SLA.
+- [ ] Install/update from beta channel on at least one Windows machine.
+- [ ] Run smoke flow: launch app, show/hide overlay, basic interaction.
+- [ ] Monitor issues/crash reports for 24 hours.
 
-## Stable Release (`vX.Y.Z` tag)
+## Stable release (`vX.Y.Z` tag)
 
 Go/no-go:
 
-- Milestone must-have issues are closed.
-- No open `P0`/`P1` issues.
-- Version numbers are aligned in:
-  - `package.json`
-  - `src-tauri/Cargo.toml`
-  - `src-tauri/tauri.conf.json`
-- `CHANGELOG.md` includes finalized entries for the target version.
+- [ ] Milestone must-have issues are closed.
+- [ ] No open `P0`, `P1`, or `release/blocker` issues.
+- [ ] Versions are aligned in:
+  - [ ] `package.json`
+  - [ ] `src-tauri/Cargo.toml`
+  - [ ] `src-tauri/tauri.conf.json`
+- [ ] Changelog entries are finalized for target version.
 
 Execution:
 
-1. Sync and verify local `main`.
-2. Bump versions with one command: `npm run version:bump -- X.Y.Z`.
-3. Commit version and changelog updates on `main` via regular PR process.
-4. Create annotated tag: `git tag -a vX.Y.Z -m "overlay-core vX.Y.Z"`.
-5. Push tag: `git push origin vX.Y.Z`.
-6. Wait for `Release Stable` workflow to complete on Windows.
-7. Confirm release `vX.Y.Z` contains expected artifacts and `latest.json`.
+- [ ] Sync and verify local `main`.
+- [ ] Run `npm run version:bump -- X.Y.Z`.
+- [ ] Merge version/changelog update through normal PR flow.
+- [ ] Create tag: `git tag -a vX.Y.Z -m "overlay-core vX.Y.Z"`.
+- [ ] Push tag: `git push origin vX.Y.Z`.
+- [ ] Wait for `.github/workflows/release-stable.yml` completion.
+- [ ] Verify release artifacts and `latest.json`.
 
 Post-release verification:
 
-- Validate updater endpoint serves the new `latest.json`.
-- Verify installation/update on Windows.
-- Publish release notes and known issues summary.
+- [ ] Validate stable updater endpoint.
+- [ ] Verify install/update on Windows.
+- [ ] Publish release notes and known issues summary.
 
-## Rollback / Hotfix Playbook
+## Rollback and hotfix
 
-Do not delete published stable tags.
+Rules:
 
-If beta release is bad:
+- [ ] Never delete published stable tags.
 
-1. Identify last known good commit.
-2. Re-run `Release Beta` workflow from a ref that points to that commit.
-3. Confirm beta artifacts are replaced and announce rollback in release notes/issues.
+If beta is bad:
 
-If stable release is bad:
+- [ ] Identify last known good commit.
+- [ ] Re-run beta release from that ref.
+- [ ] Confirm assets are replaced and announce rollback.
 
-1. Open high-priority incident and assign incident owner.
-2. Prepare patch on `main` (`fix/...`) and validate with required checks.
-3. Publish hotfix as next patch version (`vX.Y.(Z+1)`).
-4. Update `CHANGELOG.md` with incident impact and fix.
+If stable is bad:
 
-## Release Record
+- [ ] Open high-priority incident and assign owner.
+- [ ] Prepare patch on `main` (`fix/...`) and pass required checks.
+- [ ] Publish hotfix as next patch version.
+- [ ] Update `CHANGELOG.md` with impact and fix.
 
-For each release, capture:
+## Release record (required)
 
-- version/tag and channel;
-- release owner;
-- go/no-go timestamp;
-- link to workflow run;
-- verification result (Windows);
-- follow-up issues created.
+Capture for each release:
+
+- [ ] version/tag and channel
+- [ ] release owner
+- [ ] go/no-go timestamp
+- [ ] workflow run link
+- [ ] Windows verification result
+- [ ] follow-up issues
