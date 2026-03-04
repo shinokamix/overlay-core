@@ -1,46 +1,48 @@
 # Architecture
 
+This file defines module boundaries and dependency direction.
+
 ## Layers
 
-- `app`: application shell, global providers, app-level model/state
-- `features`: user-facing business actions and workflows
-- `shared`: reusable UI primitives and low-level utilities
+- `app` - shell composition, providers, and global app state.
+- `features` - user-facing flows and business actions.
+- `shared` - reusable UI primitives and low-level utilities.
 
-## Current modules
+## Dependency rules (strict)
 
-- `src/app/main.tsx`: app bootstrap and providers
-- `src/app/App.tsx`: shell layout and feature composition
-- `src/app/model`: app-level state and shell hooks (`overlay-store`, window size sync)
-- `src/features/hotkey-settings`: loading/updating desktop hotkey bindings
-- `src/features/overlay-interaction`: interaction mode sync and toggle flow
-- `src/shared/config`: runtime environment parsing/validation
-- `src/shared/lib`: shared infrastructure (`query-client`, `logger`, `utils`)
-- `src/shared/ui`: reusable UI primitives (shadcn-based)
-- `src-tauri`: native runtime and capabilities
+- `app` may import from `features` and `shared`.
+- `features` may import only from `shared`.
+- `shared` must not import from `app` or `features`.
 
-### Tauri backend modules (`src-tauri/src`)
+## Frontend module map
 
-- `app/bootstrap`: Tauri builder wiring, plugin setup, startup flow
-- `app/commands`: centralized command export for `invoke_handler`
-- `app/state`: app-managed runtime state registration
-- `app/events`: backend event channel names
-- `features/hotkeys`: hotkey models, state, commands, and registration/update services
-- `features/overlay`: overlay window/runtime state, commands, and interaction/visibility services
-- `shared/constants`: backend constants shared across features
+- `src/app/main.tsx` - bootstrap and root providers.
+- `src/app/App.tsx` - shell layout and feature composition.
+- `src/app/model` - global overlay/window state and shell hooks.
+- `src/features/hotkey-settings` - load/update hotkey bindings.
+- `src/features/overlay-interaction` - passive/interactive mode toggle flow.
+- `src/shared/config` - environment parsing and validation.
+- `src/shared/lib` - shared infra (`logger`, query client, helpers).
+- `src/shared/ui` - reusable UI components.
 
-## Architectural constraints
+## Tauri module map (`src-tauri/src`)
 
-- `app` may depend on `features` and `shared`.
-- `features` may depend on `shared`, but not on `app` or other features internals.
-- `shared` cannot import from `app` or `features`.
+- `app/bootstrap` - Tauri builder and plugin wiring.
+- `app/commands` - command exports for `invoke_handler`.
+- `app/state` - backend runtime state registration.
+- `app/events` - backend event channel names.
+- `features/hotkeys` - models, commands, registration, update services.
+- `features/overlay` - window state, commands, visibility/interaction services.
+- `shared/constants` - backend constants shared across modules.
 
-## Testing strategy
+## Placement rules
 
-- Unit tests: near module boundaries (store/config/lib)
-- Integration tests: app-level interactions
-- E2E smoke: app shell startup and critical visible controls
+- Global shell state belongs in `app/model`.
+- User actions and business flows belong in `features/*`.
+- Reusable UI primitives belong in `shared/ui`.
 
-## Near-term target
+## Test boundaries
 
-First vertical slice:
-`hotkey -> show overlay -> screenshot -> attach -> ask -> answer`
+- Unit tests: config, stores, shared utilities.
+- Integration tests: app shell + feature interaction.
+- E2E smoke tests: startup and critical visible controls.

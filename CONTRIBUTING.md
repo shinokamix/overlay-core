@@ -1,36 +1,16 @@
 # Contributing
 
+This file is for contributors working on code, docs, and CI changes.
+
 ## Prerequisites
 
 - Node.js 20+
 - npm 10+
 - Rust stable toolchain
 
-## Quick start
+## Branch workflow
 
-```bash
-npm ci
-npm run check
-cargo check --manifest-path src-tauri/Cargo.toml
-```
-
-## Workflow
-
-1. Start every new task in a fresh branch created from `main`.
-2. Make focused changes.
-3. Create atomic commits (one logical change per commit).
-4. Run local checks.
-5. Open a PR with a clear scope and rationale.
-6. Merge only after required CI checks pass.
-
-Branch policy is strict:
-
-- One task = one branch.
-- Never push commits directly to `main`.
-- Do not reuse previous task branches for new work.
-- If you need to continue an old branch, do it only for the same task scope.
-
-Recommended start commands:
+Every new task starts from fresh `main`.
 
 ```bash
 git fetch origin main
@@ -39,91 +19,64 @@ git pull --ff-only origin main
 git switch -c <type>/<short-kebab-name>
 ```
 
-`main` is protected:
+Rules:
 
-- Direct pushes to `main` are not allowed.
-- Changes must go through pull requests.
-- Merge is allowed only when required CI checks are green.
+- One task = one branch.
+- Never push directly to `main`.
+- Do not reuse old task branches for new scope.
+- Keep commits atomic (one logical change per commit).
 
-If your local worktree is dirty before starting a new task, either commit/stash first or open a separate branch for that existing work.
+Allowed branch prefixes:
 
-## Branch naming
+- `feat/`
+- `fix/`
+- `refactor/`
+- `chore/`
+- `docs/`
+- `test/`
+- `ci/`
 
-Use one of these prefixes:
+## Required local checks
 
-- `feat/<short-kebab-name>`
-- `fix/<short-kebab-name>`
-- `refactor/<short-kebab-name>`
-- `chore/<short-kebab-name>`
-- `docs/<short-kebab-name>`
-- `test/<short-kebab-name>`
-- `ci/<short-kebab-name>`
-
-Branch names are validated in CI for pull requests to `main`.
-
-## Local checks
+Run before opening or updating a PR:
 
 ```bash
 npm run check
 cargo check --manifest-path src-tauri/Cargo.toml
 ```
 
-## Commit quality gates
+Execution protocol:
 
-- `pre-commit`: runs `lint-staged` (Prettier + ESLint on staged files)
-- `pre-push`: runs `npm run prepush:verify` (`typecheck + test`)
-- Keep commits atomic: each commit should represent one logical change and should not mix unrelated edits.
+- Run from repository root.
+- Use `npm ci` when dependencies may be stale.
+- After code edits, run `npm run format` before `npm run check`.
+- If checks fail on files outside your task scope, document exact files and ask for scope decision.
 
-## Coding rules
+Git hooks:
 
-- Keep architecture FSD-oriented (`app`, `features`, `shared`).
-- Respect dependency direction:
-  - `app` may depend on `features` and `shared`.
-  - `features` may depend only on `shared`.
-  - `shared` must not import from `app` or `features`.
-- Put global shell state in `app/model`.
-- Put user actions/business flows in `features/*`.
-- Reusable UI primitives belong to `shared/ui`.
-- Keep changes small and testable.
-- Do not add dependency changes without clear need.
+- `pre-commit`: `lint-staged`
+- `pre-push`: `npm run prepush:verify`
 
-## Scope guidance
+## PR scope and quality
 
 - Keep PRs single-purpose and reviewable.
-- Split unrelated work into separate branches/PRs.
-- Update docs when behavior or project workflow changes.
+- Split unrelated work into separate branches.
+- Add or update tests when behavior changes.
+- Keep CI green before requesting review.
 
-## Documentation updates
+Use [`.github/PULL_REQUEST_TEMPLATE.md`](./.github/PULL_REQUEST_TEMPLATE.md).
 
-When relevant, update these files in the same PR:
+## Architecture and labels
 
-- `CHANGELOG.md` for user-facing behavior changes;
-- `ROADMAP.md` at each milestone boundary or when planning policy changes;
-- `RELEASE_CHECKLIST.md` when release operations or go/no-go gates change;
-- `ARCHITECTURE.md` when module boundaries or dependency direction changes;
-- `README.md` when setup steps, scripts, or top-level navigation changes.
+- Follow module boundaries in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
+- Use severity and release labels from [`.github/ISSUE_LABELS.md`](./.github/ISSUE_LABELS.md).
 
-## Issue triage labels
+## Documentation update rules
 
-Severity and release-blocking labels are defined in
-`.github/ISSUE_LABELS.md`.
+Update docs in the same PR when relevant:
 
-Use this taxonomy for all bug triage:
-
-- assign exactly one `severity/*` label (`severity/p0`..`severity/p3`);
-- assign one `release/*` label for milestone-tracked bugs;
-- treat `severity/p0` and `severity/p1` as release blockers by default.
-
-## Ownership and review routing
-
-- `CODEOWNERS` is used for automatic reviewer assignment.
-- Keep ownership mappings current when new top-level areas are added.
-
-## PR checklist
-
-- [ ] Scope is focused and explained
-- [ ] Tests added/updated where needed
-- [ ] `CHANGELOG.md` updated for user-facing changes (or marked as not applicable)
-- [ ] `npm run check` passes
-- [ ] `cargo check --manifest-path src-tauri/Cargo.toml` passes
-- [ ] Docs updated if behavior/structure changed
+- `CHANGELOG.md` - user-visible behavior changes.
+- `ROADMAP.md` - milestone plan or release cadence changes.
+- `RELEASE_CHECKLIST.md` - release process or go/no-go gate changes.
+- `ARCHITECTURE.md` - module boundary or dependency direction changes.
+- `README.md` - setup, scripts, or top-level navigation changes.

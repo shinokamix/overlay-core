@@ -1,35 +1,21 @@
-# AGENTS.md - repo instructions for automated agents
+# AGENTS.md
 
-Follow these rules when making changes in this repository.
+Automation rules for this repository.
 
-## Project context
+## Source-of-truth map
 
-- Frontend: TypeScript/React (validated via `npm run check`)
-- Desktop shell: Tauri (Rust) in `src-tauri`
-- Architecture: FSD-oriented structure (`app`, `features`, `shared`)
+- contribution workflow: `CONTRIBUTING.md`
+- architecture boundaries: `ARCHITECTURE.md`
+- roadmap and milestones: `ROADMAP.md`
+- release operation: `RELEASE_CHECKLIST.md`
+- security process: `SECURITY.md`
 
-## Workflow
+## Task start protocol (required)
 
-- Every new task (feature, fix, refactor, docs/test/ci change) must start in a fresh branch created from `main`.
-- Do not reuse an old task branch for a new request, even if branch names are similar.
-- Never commit directly to `main`.
-- If user explicitly asks to continue an existing branch, continue only that same scope.
-- If worktree is dirty before starting a new task, stop and ask the user how to proceed.
-- Make focused, minimal changes with a clear rationale.
-- Run all required local checks before finishing.
-- Assume `main` is protected and merges require green required CI checks.
-- Do NOT create or open pull requests; the user will do that.
-
-## Branch start protocol (required)
-
-Run this at the start of each new task:
-
-1. Ensure worktree is clean (`git status --short`).
-2. Sync `main` from remote.
-3. Create a new branch from updated `main`.
+1. Confirm clean worktree (`git status --short`).
+2. Sync `main`.
+3. Create a fresh branch from updated `main`.
 4. Confirm current branch is not `main`.
-
-Suggested commands:
 
 ```bash
 git fetch origin main
@@ -39,100 +25,61 @@ git switch -c <type>/<short-kebab-name>
 git branch --show-current
 ```
 
-If `origin` is not configured, use local `main` as the source branch.
+If worktree is dirty before a new task, stop and ask the user how to proceed.
 
-## Execution contract (required)
+## Branch and scope rules
 
-At task start:
+- Never commit directly to `main`.
+- One logical task per branch.
+- Do not reuse old branches for new scope.
+- If user asks to continue existing branch, keep original scope only.
+- Do not create or open pull requests; user handles PR actions.
 
-1. Classify scope (`feat`, `fix`, `refactor`, `chore`, `docs`, `test`, `ci`).
-2. Create a branch name from that scope.
-3. Keep change set focused to one logical task.
+Allowed branch prefixes: `feat/`, `fix/`, `refactor/`, `chore/`, `docs/`, `test/`, `ci/`.
 
-During implementation:
+## Implementation rules
 
-- Prefer reading architecture context first: `README.md`, `ARCHITECTURE.md`, and nearest local docs.
-- For risky edits, run targeted checks first, then run required full checks.
-- Do not make unrelated refactors in the same task branch.
-- Keep commits atomic: one logical change per commit with a clear message.
-- Do not mix unrelated changes in a single commit.
+- Keep changes minimal and focused.
+- Avoid unrelated refactors.
+- Keep commits atomic.
+- Follow FSD boundaries: `app`, `features`, `shared`.
+- Never commit secrets or real API keys.
 
-At task finish, report:
-
-- Files changed and why.
-- Checks run and results.
-- Remaining risks or follow-ups.
-
-## Branch naming
-
-Use one of these prefixes:
-
-- `feat/<short-kebab-name>`
-- `fix/<short-kebab-name>`
-- `refactor/<short-kebab-name>`
-- `chore/<short-kebab-name>`
-- `docs/<short-kebab-name>`
-- `test/<short-kebab-name>`
-- `ci/<short-kebab-name>`
-
-## Local checks (must pass)
+## Required checks
 
 - `npm run check`
 - `cargo check --manifest-path src-tauri/Cargo.toml`
 
-## CI awareness
+Execution protocol:
 
-Changes should not introduce failures in CI checks:
+- Use `npm ci` before checks when dependencies may be stale.
+- Run `npm run format` before `npm run check` after code edits.
+- Run checks from repo root only.
+- Never report checks as passed if any step fails.
+- If `npm run check` fails on files outside task scope, report exact files and stop for user decision.
 
-- Frontend: format, lint, typecheck, test, build
+CI expectations:
+
+- frontend: format, lint, typecheck, test, build
 - Rust/Tauri: `cargo fmt --check`, `cargo clippy -D warnings`, `cargo check --all-targets`
-- E2E smoke: Playwright (`npm run e2e`)
+- e2e smoke: `npm run e2e`
 
-## Commit quality gates (respect hooks)
+## Documentation update rules
 
-- `pre-commit`: `lint-staged` (Prettier + ESLint on staged files)
-- `pre-push`: `npm run prepush:verify` (typecheck + test)
-- Commit structure: prefer a small sequence of atomic commits over one large mixed commit.
+Update docs in the same task when relevant:
 
-## Coding rules
+- `CHANGELOG.md` for user-facing behavior changes.
+- `ROADMAP.md` for milestone or planning policy changes.
+- `RELEASE_CHECKLIST.md` for release process or gate changes.
+- `ARCHITECTURE.md` for module boundary changes.
+- `README.md` for setup, scripts, or navigation changes.
 
-- Keep architecture FSD-oriented: `app`, `features`, `shared`.
-- Dependency direction:
-  - `app` may depend on `features` and `shared`.
-  - `features` may depend only on `shared`.
-  - `shared` must not import from `app` or `features`.
-- Put global shell state in `app/model`.
-- Put user actions/business flows in `features/*`.
-- Reusable UI primitives belong to `shared/ui`.
-- Keep changes small and testable.
-- Do not introduce dependency changes without clear need.
+## Task completion report
 
-## Documentation rules
+Always report:
 
-Update documentation in the same task when changes affect behavior or process:
+- files changed and why
+- checks run and results
+- remaining risks or follow-ups
 
-- update `CHANGELOG.md` for user-facing behavior changes;
-- update `ROADMAP.md` at milestone boundaries or when planning policy changes;
-- update `RELEASE_CHECKLIST.md` when release operations/go-no-go gates change;
-- update `ARCHITECTURE.md` when module boundaries or dependency direction changes;
-- update `README.md` when setup, scripts, or top-level navigation changes.
-
-## Security and env
-
-- Never commit secrets or real API keys.
-- Keep `.env.example` in sync when environment variables change.
-
-## PR checklist (prepare for the user)
-
-- Scope is focused and explained.
-- Tests added/updated where needed.
-- `npm run check` passes.
-- `cargo check --manifest-path src-tauri/Cargo.toml` passes.
-- Docs updated if behavior/structure changed.
-
-## Definition of done
-
-- If any required check fails, fix issues and re-run until green.
-- Prefer editing the smallest possible set of files; avoid touching unrelated files.
-- Avoid unrelated refactors or formatting-only diffs.
-- Summarize what changed, why, and how it was verified (commands run).
+If checks fail, include failing command and first actionable error block.

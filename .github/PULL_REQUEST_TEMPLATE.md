@@ -1,6 +1,6 @@
 ## Summary
 
-Describe what changed and why.
+What changed and why?
 
 ## Scope
 
@@ -10,9 +10,13 @@ Describe what changed and why.
 - [ ] Infrastructure / CI
 - [ ] Documentation
 
+## Why now
+
+What problem does this PR solve?
+
 ## Validation
 
-Describe how this was tested.
+How was this verified?
 
 - [ ] `npm run check`
 - [ ] `cargo check --manifest-path src-tauri/Cargo.toml`
@@ -20,11 +24,15 @@ Describe how this was tested.
 
 ## Risks
 
-List any known tradeoffs or follow-up items.
+Known tradeoffs, limitations, or follow-ups.
+
+## Documentation
+
+- [ ] Docs updated
+- [ ] `CHANGELOG.md` updated for user-facing changes
+- [ ] Docs not needed (explain in Summary)
 
 ## Before requesting review
 
 - [ ] Local checks pass
-- [ ] Documentation updated if needed
-- [ ] `CHANGELOG.md` updated for user-facing changes (or marked as not applicable)
 - [ ] CI is green

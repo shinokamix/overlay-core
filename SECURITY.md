@@ -1,37 +1,35 @@
 # Security Policy
 
-## Supported Versions
+Use this policy to report vulnerabilities in `overlay-core`.
 
-This project is in early development. Security fixes are applied on the active default branch.
+## Supported versions
 
-## Reporting a Vulnerability
+The project is in active development. Security fixes are applied on the default branch.
 
-Please do not open public GitHub issues for security vulnerabilities.
+## How to report
 
-Use GitHub private vulnerability reporting (repository `Security` tab -> `Report a vulnerability`).
+- Do not open public issues for vulnerabilities.
+- Use GitHub private vulnerability reporting: `Security` tab -> `Report a vulnerability`.
+- If private reporting is unavailable, contact maintainers through a private channel first.
 
-If private reporting is unavailable, contact maintainers through a private channel before disclosure.
+Include in the report:
 
-Include:
+- affected component or file
+- reproduction steps or PoC
+- impact assessment
+- suggested fix (if available)
 
-- Affected component/file
-- Reproduction steps or proof of concept
-- Impact assessment
-- Suggested remediation (if available)
+Expected response: acknowledgment within 72 hours.
 
-You should receive an acknowledgment within 72 hours.
+## Disclosure policy
 
-## Disclosure Policy
-
-- We validate and triage reports before public disclosure.
-- We coordinate release timing for fixes.
+- We validate and triage before public disclosure.
+- We coordinate fix timing with reporters when possible.
 - We credit responsible disclosure unless anonymity is requested.
 
-## Scope Notes
+## Priority scope
 
-Given the product focus (desktop capture + AI providers), high-priority areas are:
-
-- Local data handling and storage
-- Provider key handling
-- Capture/recording permission boundaries
-- Dependency supply chain risks
+- local data handling and storage
+- provider key handling
+- capture/recording permission boundaries
+- dependency supply-chain risks
