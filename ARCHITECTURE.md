@@ -19,6 +19,9 @@ This file defines module boundaries and dependency direction.
 - `src/app/main.tsx` - bootstrap and root providers.
 - `src/app/App.tsx` - shell layout and feature composition.
 - `src/app/model` - global overlay/window state and shell hooks.
+- `src/features/chat-shell` - chat-like mock conversation surface and composer.
+- `src/features/overlay-header` - header controls (settings + close) and drag zone.
+- `src/features/settings-modal` - temporary settings modal shell.
 - `src/features/hotkey-settings` - load/update hotkey bindings.
 - `src/features/overlay-interaction` - passive/interactive mode toggle flow.
 - `src/shared/config` - environment parsing and validation.

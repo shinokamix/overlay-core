@@ -1,28 +1,28 @@
 import { useRef } from "react";
-import { HotkeySettingsPanel } from "@/features/hotkey-settings";
-import { OverlayInteractionControls } from "@/features/overlay-interaction";
+import { ChatShell } from "@/features/chat-shell";
+import { OverlayHeader } from "@/features/overlay-header";
+import { SettingsModal } from "@/features/settings-modal";
+import { useOverlayShellState } from "@/app/model/use-overlay-shell-state";
 import { useOverlayWindowSizeSync } from "@/app/model/use-overlay-window-size-sync";
 import { isTauriRuntime } from "@/shared/config/runtime";
 
 export default function App() {
   const tauriRuntime = isTauriRuntime();
   const panelRef = useRef<HTMLElement | null>(null);
+  const { closeSettings, isSettingsOpen, openSettings } = useOverlayShellState();
 
   useOverlayWindowSizeSync({ panelRef, tauriRuntime });
 
   return (
-    <main className="p-3 text-foreground opacity-70">
+    <main className="p-3 text-foreground opacity-75">
       <section
         ref={panelRef}
-        className="mx-auto flex w-full max-w-2xl flex-col gap-6 rounded-xl border bg-card/95 p-6 shadow-xl backdrop-blur"
+        className="relative mx-auto flex w-full max-w-3xl flex-col gap-4 rounded-2xl border border-border/80 bg-card/95 p-4 shadow-2xl backdrop-blur"
       >
-        <header className="space-y-2">
-          <p className="text-sm text-muted-foreground">overlay-core bootstrap</p>
-          <h1 className="text-2xl font-semibold tracking-tight">Local-first AI overlay</h1>
-        </header>
+        <OverlayHeader tauriRuntime={tauriRuntime} onOpenSettings={openSettings} />
+        <ChatShell />
 
-        <OverlayInteractionControls tauriRuntime={tauriRuntime} />
-        <HotkeySettingsPanel tauriRuntime={tauriRuntime} />
+        <SettingsModal open={isSettingsOpen} onClose={closeSettings} />
       </section>
     </main>
   );
