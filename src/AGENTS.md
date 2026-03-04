@@ -2,26 +2,15 @@
 
 This file applies to `src/**` and extends root `AGENTS.md`.
 
-## Scope
+## Extra rules for frontend scope
 
-- React + TypeScript application code only.
-- Keep architecture FSD-oriented: `app`, `features`, `shared`.
-
-## Dependency direction (required)
-
-- `app` may depend on `features` and `shared`.
-- `features` may depend only on `shared`.
-- `shared` must not import from `app` or `features`.
-
-## Implementation rules
-
-- Put global shell/app state in `app/model`.
-- Put user-facing business actions in `features/*`.
-- Place reusable UI primitives in `shared/ui`.
-- Prefer small, focused changes; avoid unrelated refactors.
-- Do not introduce new dependencies without clear need.
+- Keep FSD boundaries strict: `app`, `features`, `shared`.
+- Do not import `app` from `features` or `shared`.
+- Keep global shell state in `app/model`.
+- Put user-facing flows in `features/*`.
+- Keep reusable primitives in `shared/ui`.
 
 ## Validation
 
-- Run targeted checks for touched code while iterating.
-- Before finishing, required root checks must pass (`npm run check` and Rust check from root policy).
+- Run targeted frontend checks while iterating.
+- Finish with required root checks.
