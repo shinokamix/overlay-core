@@ -24,11 +24,13 @@ Write entries from user impact first, then technical detail.
 ### Changed
 
 - Main overlay UI now uses a chat-oriented layout with a draggable header region and focus on conversational input flow.
+- Settings modal is now rebuilt with shadcn dialog/tabs primitives and structured into category navigation (`MCP servers`, `Hotkeys`, `Skills`, `Providers`) with a dedicated content area.
 - Desktop capability permissions now explicitly allow header drag-start and app close actions.
 - Main Tauri window now starts in overlay mode: undecorated (no native titlebar/buttons), non-minimizable, always on top, hidden from taskbar, visible across workspaces where supported, and marked as content-protected to stay out of screen capture on supported platforms.
 - The desktop target is now Windows-only, and non-Windows builds fail at compile time.
 - Overlay window now runs in passive click-through mode by default and switches to interactive mode only when toggled by hotkey or UI action.
 - Overlay shell now uses a transparent, compact window that tracks content size instead of relying on a large fullscreen transparent surface.
+- Settings modal backdrop now respects the overlay panel rounded corners instead of rendering a square dimming layer.
 
 ### Removed
 
