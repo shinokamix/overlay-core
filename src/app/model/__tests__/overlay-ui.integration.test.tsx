@@ -23,6 +23,14 @@ describe("App", () => {
 
     await user.click(screen.getByRole("button", { name: /settings/i }));
     expect(screen.getByRole("dialog", { name: /settings/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /mcp servers/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /hotkeys/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /skills/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /providers/i })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("tab", { name: /providers/i }));
+    expect(screen.getByRole("heading", { name: /providers/i })).toBeInTheDocument();
+
     await user.click(screen.getByRole("button", { name: /^close$/i }));
     expect(screen.queryByRole("dialog", { name: /settings/i })).not.toBeInTheDocument();
 
