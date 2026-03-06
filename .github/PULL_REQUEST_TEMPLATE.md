@@ -30,6 +30,7 @@ Known tradeoffs, limitations, or follow-ups.
 
 - [ ] Docs updated
 - [ ] `CHANGELOG.md` updated for user-facing changes
+- [ ] Internal-only change: used `[skip-changelog]` in PR title/body with rationale
 - [ ] Docs not needed (explain in Summary)
 
 ## Before requesting review

@@ -64,6 +64,11 @@ Git hooks:
 - Add or update tests when behavior changes.
 - Keep CI green before requesting review.
 
+Changelog policy:
+
+- If your PR changes `src/**` or `src-tauri/**` with user-visible impact, update `CHANGELOG.md` (`## [Unreleased]`).
+- For internal-only or technical changes, you may skip changelog by adding `[skip-changelog]` to the PR title or body and explain why.
+
 Use [`.github/PULL_REQUEST_TEMPLATE.md`](./.github/PULL_REQUEST_TEMPLATE.md).
 
 ## Architecture and labels
