@@ -37,6 +37,9 @@ npm run check
 cargo check --manifest-path src-tauri/Cargo.toml
 ```
 
+- If your PR changes `src/**` or `src-tauri/**` with user-visible impact, add an entry to `CHANGELOG.md` under `## [Unreleased]`.
+- For internal-only changes, use `[skip-changelog]` in the PR title or body with a short reason.
+
 ## Common scripts
 
 - `npm run dev` - start web dev server

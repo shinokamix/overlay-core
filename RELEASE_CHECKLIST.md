@@ -19,12 +19,13 @@ Go/no-go:
 
 - [ ] Scope for the cycle is frozen.
 - [ ] No known `P0` or `P1` regressions in beta scope.
-- [ ] Draft release notes are ready.
+- [ ] `## [Unreleased]` in `CHANGELOG.md` is up to date (beta release body is generated from this section).
 
 Execution:
 
 - [ ] Sync local `main`.
 - [ ] Run GitHub Actions workflow: `.github/workflows/release-beta.yml` from `main`.
+- [ ] Verify release page notes are auto-generated from `CHANGELOG.md` `## [Unreleased]`.
 - [ ] Wait for Windows build completion.
 - [ ] Verify prerelease `beta` has fresh artifacts.
 - [ ] Verify `latest.json` exists in beta assets.
