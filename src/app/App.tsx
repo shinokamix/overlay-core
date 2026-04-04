@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { ChatShell } from "@/features/chat-shell";
+import { HotkeySettingsPanel } from "@/features/hotkey-settings";
 import { OverlayHeader } from "@/features/overlay-header";
 import { SettingsModal } from "@/features/settings-modal";
 import { useOverlayShellState } from "@/app/model/use-overlay-shell-state";
@@ -22,7 +23,11 @@ export default function App() {
         <OverlayHeader tauriRuntime={tauriRuntime} onOpenSettings={openSettings} />
         <ChatShell />
 
-        <SettingsModal open={isSettingsOpen} onClose={closeSettings} />
+        <SettingsModal
+          open={isSettingsOpen}
+          onClose={closeSettings}
+          sectionContent={{ hotkeys: <HotkeySettingsPanel tauriRuntime={tauriRuntime} /> }}
+        />
       </section>
     </main>
   );

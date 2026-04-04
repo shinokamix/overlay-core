@@ -1,4 +1,5 @@
-import { settingsSections } from "@/features/settings-modal/model";
+import type { ReactNode } from "react";
+import { settingsSections, type SettingsSectionId } from "@/features/settings-modal/model";
 import { SettingsModalContent } from "@/features/settings-modal/ui/settings-modal-content";
 import { SettingsModalSidebar } from "@/features/settings-modal/ui/settings-modal-sidebar";
 import { Button } from "@/shared/ui/button";
@@ -15,9 +16,10 @@ import { Tabs } from "@/shared/ui/tabs";
 type Props = {
   open: boolean;
   onClose: () => void;
+  sectionContent?: Partial<Record<SettingsSectionId, ReactNode>>;
 };
 
-export function SettingsModal({ open, onClose }: Props) {
+export function SettingsModal({ open, onClose, sectionContent }: Props) {
   return (
     <Dialog
       open={open}
@@ -51,7 +53,7 @@ export function SettingsModal({ open, onClose }: Props) {
           className="flex min-h-0 flex-1 flex-row"
         >
           <SettingsModalSidebar sections={settingsSections} />
-          <SettingsModalContent sections={settingsSections} />
+          <SettingsModalContent sections={settingsSections} sectionContent={sectionContent} />
         </Tabs>
       </DialogContent>
     </Dialog>

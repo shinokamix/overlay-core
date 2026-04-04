@@ -28,6 +28,12 @@ describe("App", () => {
     expect(screen.getByRole("tab", { name: /skills/i })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: /providers/i })).toBeInTheDocument();
 
+    await user.click(screen.getByRole("tab", { name: /hotkeys/i }));
+    expect(
+      screen.getByText(/open in tauri desktop runtime to configure hotkeys/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/toggle overlay visibility/i)).toBeInTheDocument();
+
     await user.click(screen.getByRole("tab", { name: /providers/i }));
     expect(screen.getByRole("heading", { name: /providers/i })).toBeInTheDocument();
 
