@@ -56,6 +56,10 @@ pub fn unregister_hotkey(app: &AppHandle, accelerator: &str) -> Result<(), Strin
 
 pub fn register_hotkey_bindings(app: &AppHandle, bindings: &[HotkeyBinding]) -> Result<(), String> {
     for binding in bindings {
+        if binding.accelerator.trim().is_empty() {
+            continue;
+        }
+
         register_hotkey(app, binding.action, &binding.accelerator)?;
     }
 
@@ -74,11 +78,6 @@ pub fn update_hotkey_binding(
     accelerator: String,
 ) -> Result<(), String> {
     let accelerator = accelerator.trim().to_string();
-    if accelerator.is_empty() {
-        return Err("hotkey accelerator cannot be empty".to_string());
-    }
-
-    validate_hotkey_accelerator(&accelerator)?;
 
     let current = hotkeys
         .get(action)
@@ -88,7 +87,18 @@ pub fn update_hotkey_binding(
         return Ok(());
     }
 
-    unregister_hotkey(app, &current)?;
+    if !accelerator.is_empty() {
+        validate_hotkey_accelerator(&accelerator)?;
+    }
+
+    if !current.is_empty() {
+        unregister_hotkey(app, &current)?;
+    }
+
+    if accelerator.is_empty() {
+        hotkeys.set(action, accelerator);
+        return Ok(());
+    }
 
     match register_hotkey(app, action, &accelerator) {
         Ok(()) => {
@@ -96,14 +106,38 @@ pub fn update_hotkey_binding(
             Ok(())
         }
         Err(error) => {
-            if let Err(rollback_error) = register_hotkey(app, action, &current) {
-                eprintln!(
-                    "failed to rollback previous hotkey '{current}' for action '{}': {rollback_error}",
-                    hotkey_action_key(action),
-                );
+            if !current.is_empty() {
+                if let Err(rollback_error) = register_hotkey(app, action, &current) {
+                    eprintln!(
+                        "failed to rollback previous hotkey '{current}' for action '{}': {rollback_error}",
+                        hotkey_action_key(action),
+                    );
+                }
             }
 
             Err(error)
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::validate_hotkey_accelerator;
+
+    #[test]
+    fn accepts_single_key_shortcuts() {
+        assert!(validate_hotkey_accelerator("A").is_ok());
+        assert!(validate_hotkey_accelerator("Space").is_ok());
+    }
+
+    #[test]
+    fn accepts_modifier_based_shortcuts() {
+        assert!(validate_hotkey_accelerator("Ctrl+Shift+K").is_ok());
+    }
+
+    #[test]
+    fn rejects_modifier_only_shortcuts() {
+        assert!(validate_hotkey_accelerator("Ctrl").is_err());
+        assert!(validate_hotkey_accelerator("Ctrl+Shift").is_err());
     }
 }
