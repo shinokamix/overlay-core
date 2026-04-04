@@ -19,7 +19,7 @@ Write entries from user impact first, then technical detail.
 - Dedicated global hotkey support with default `Ctrl+Shift+Enter` to toggle temporary overlay interactivity.
 - Tauri hotkey bindings API scaffolding (`get_hotkey_bindings` / `update_hotkey_binding`) for upcoming user-configurable shortcuts in Settings.
 - Single-instance CLI toggle entrypoint (`overlay-core --toggle-overlay`) to trigger visibility toggle in existing app instance.
-- Hotkeys settings panel in app UI with editable toggle shortcut.
+- Hotkeys settings panel in app UI now supports per-action shortcut capture for any key combination (including single-key shortcuts), one-click updates, and full hotkey disable via `Clear`.
 
 ### Changed
 
