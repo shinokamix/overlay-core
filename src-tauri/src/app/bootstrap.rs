@@ -32,7 +32,11 @@ pub fn run() {
             commands::update_hotkey_binding,
             commands::get_overlay_interaction_enabled,
             commands::set_overlay_interaction_enabled_command,
-            commands::toggle_overlay_interaction_enabled_command
+            commands::toggle_overlay_interaction_enabled_command,
+            commands::get_provider_settings,
+            commands::save_provider_settings,
+            commands::remove_provider_credentials,
+            commands::send_chat_message
         ]);
 
     builder
