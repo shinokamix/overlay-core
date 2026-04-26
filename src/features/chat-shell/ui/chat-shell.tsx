@@ -1,8 +1,13 @@
 import { useChatShell } from "@/features/chat-shell/model/use-chat-shell";
 import { Button } from "@/shared/ui/button";
 
-export function ChatShell() {
-  const { draft, messages, sendStatus, setDraft, submitDraft } = useChatShell();
+type Props = {
+  tauriRuntime: boolean;
+};
+
+export function ChatShell({ tauriRuntime }: Props) {
+  const { draft, isSending, messages, sendError, sendStatus, setDraft, submitDraft } =
+    useChatShell(tauriRuntime);
 
   return (
     <section className="flex flex-1 flex-col gap-3">
@@ -33,7 +38,7 @@ export function ChatShell() {
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          submitDraft();
+          void submitDraft();
         }}
         className="flex items-center gap-2"
       >
@@ -42,12 +47,16 @@ export function ChatShell() {
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           placeholder="Type your message..."
+          disabled={isSending}
           className="h-10 flex-1 rounded-md border border-input bg-background px-3 text-sm shadow-sm"
         />
-        <Button type="submit">Send</Button>
+        <Button type="submit" disabled={isSending}>
+          {isSending ? "Sending..." : "Send"}
+        </Button>
       </form>
 
       {sendStatus ? <p className="text-xs text-muted-foreground">{sendStatus}</p> : null}
+      {sendError ? <p className="text-xs text-destructive">{sendError}</p> : null}
     </section>
   );
 }

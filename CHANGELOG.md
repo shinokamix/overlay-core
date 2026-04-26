@@ -20,6 +20,7 @@ Write entries from user impact first, then technical detail.
 - Tauri hotkey bindings API scaffolding (`get_hotkey_bindings` / `update_hotkey_binding`) for upcoming user-configurable shortcuts in Settings.
 - Single-instance CLI toggle entrypoint (`overlay-core --toggle-overlay`) to trigger visibility toggle in existing app instance.
 - Hotkeys settings panel in app UI now supports per-action shortcut capture for any key combination (including single-key shortcuts), one-click updates, and full hotkey disable via `Clear`.
+- Providers settings panel now supports OpenAI-compatible provider setup and desktop chat requests through the configured provider, with API keys stored in the OS credential store.
 
 ### Changed
 
