@@ -31,6 +31,7 @@ Write entries from user impact first, then technical detail.
 - Overlay window now runs in passive click-through mode by default and switches to interactive mode only when toggled by hotkey or UI action.
 - Overlay shell now uses a transparent, compact window that tracks content size instead of relying on a large fullscreen transparent surface.
 - Settings modal backdrop now respects the overlay panel rounded corners instead of rendering a square dimming layer.
+- Overlay hide/show now preserves the current interaction mode, so showing the window no longer forces click-through after it was interactive before hiding.
 
 ### Removed
 

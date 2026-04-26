@@ -50,10 +50,6 @@ pub fn toggle_overlay_visibility(app: &AppHandle) -> Result<(), String> {
         .map_err(|error| format!("failed to read overlay visibility: {error}"))?;
 
     if is_visible {
-        if let Err(error) = set_overlay_interaction_enabled(app, false) {
-            eprintln!("failed to lock overlay interaction before hide: {error}");
-        }
-
         window
             .hide()
             .map_err(|error| format!("failed to hide overlay window: {error}"))?;
