@@ -6,6 +6,7 @@ Windows-first, local-first desktop AI overlay built with Tauri + React.
 
 - Hotkey-driven overlay shell.
 - In-app hotkey settings and overlay interaction controls.
+- OpenAI-compatible provider settings for desktop chat requests, with API keys stored in the OS credential store.
 - Frontend and Rust/Tauri quality gates wired in CI.
 
 Current product slice is still in active development.

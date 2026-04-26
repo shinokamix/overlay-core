@@ -22,6 +22,7 @@ This file defines module boundaries and dependency direction.
 - `src/features/chat-shell` - chat-like mock conversation surface and composer.
 - `src/features/overlay-header` - header controls (settings + close) and drag zone.
 - `src/features/settings-modal` - temporary settings modal shell.
+- `src/features/provider-settings` - provider credential/configuration UI for chat requests.
 - `src/features/hotkey-settings` - load/update hotkey bindings.
 - `src/features/overlay-interaction` - passive/interactive mode toggle flow.
 - `src/shared/config` - environment parsing and validation.
@@ -36,6 +37,7 @@ This file defines module boundaries and dependency direction.
 - `app/events` - backend event channel names.
 - `features/hotkeys` - models, commands, registration, update services.
 - `features/overlay` - window state, commands, visibility/interaction services.
+- `features/providers` - provider settings storage and OpenAI-compatible chat requests.
 - `shared/constants` - backend constants shared across modules.
 
 ## Placement rules
