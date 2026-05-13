@@ -1,16 +1,15 @@
 use std::{collections::HashMap, fs, io, path::PathBuf};
 
-use reqwest::StatusCode;
 use tauri::{AppHandle, Manager};
 
-use crate::features::providers::catalog::{self, ProviderCatalogEntry, ProviderProtocol};
+use crate::features::providers::adapters::{self, ChatRequest};
+use crate::features::providers::catalog::{self, ProviderCatalogEntry};
 use crate::features::providers::credentials;
 use crate::features::providers::model::{
-    ActiveProviderView, ActiveSelection, ActiveSelectionInput, ChatMessageInput,
-    ChatMessageResponse, LegacyProviderConfigFile, NewProviderConnectionInput, OpenAiChatRequest,
-    OpenAiChatResponse, ProviderConfigFile, ProviderConnection, ProviderConnectionView,
-    ProviderSettingsInput, ProviderSettingsView, UpdateProviderConnectionInput,
-    PROVIDER_CONFIG_VERSION,
+    ActiveProviderView, ActiveSelection, ActiveSelectionInput, ChatMessage, ChatMessageInput,
+    ChatMessageResponse, ChatRole, LegacyProviderConfigFile, NewProviderConnectionInput,
+    ProviderConfigFile, ProviderConnection, ProviderConnectionView, ProviderSettingsInput,
+    ProviderSettingsView, UpdateProviderConnectionInput, WireChatMessage, PROVIDER_CONFIG_VERSION,
 };
 
 const PROVIDERS_CONFIG_FILE: &str = "providers.json";
@@ -703,61 +702,73 @@ pub fn remove_provider_credentials(
 
 // ---------- Chat ----------
 
+pub fn messages_from_input(input: &ChatMessageInput) -> Result<Vec<ChatMessage>, String> {
+    if let Some(messages) = &input.messages {
+        if messages.is_empty() {
+            return Err("messages must contain at least one entry".to_string());
+        }
+
+        let parsed: Result<Vec<ChatMessage>, String> =
+            messages.iter().map(parse_wire_message).collect();
+        return parsed;
+    }
+
+    let text = input
+        .text
+        .as_deref()
+        .map(str::trim)
+        .filter(|text| !text.is_empty())
+        .ok_or_else(|| "message is required".to_string())?;
+
+    Ok(vec![ChatMessage {
+        role: ChatRole::User,
+        content: text.to_string(),
+    }])
+}
+
+fn parse_wire_message(message: &WireChatMessage) -> Result<ChatMessage, String> {
+    let content = message.content.trim().to_string();
+    if content.is_empty() {
+        return Err("chat message content cannot be empty".to_string());
+    }
+    Ok(ChatMessage {
+        role: ChatRole::parse(&message.role)?,
+        content,
+    })
+}
+
+fn lookup_max_output_tokens(provider_id: &str, model: &str) -> Option<u32> {
+    catalog::catalog()
+        .providers
+        .iter()
+        .find(|provider| provider.id == provider_id)?
+        .models
+        .iter()
+        .find(|catalog_model| catalog_model.id == model)
+        .map(|catalog_model| catalog_model.max_output_tokens)
+}
+
 pub async fn send_chat_message(
     app: &AppHandle,
     input: ChatMessageInput,
 ) -> Result<ChatMessageResponse, String> {
-    let message = input.text.trim().to_string();
-    if message.is_empty() {
-        return Err("message is required".to_string());
-    }
-
+    let messages = messages_from_input(&input)?;
     let resolved = resolve_active_provider(app)?;
+    let entry = catalog_entry(&resolved.connection.provider_id)?;
 
-    // This branch keeps the legacy OpenAI-compatible call path. Routing by
-    // protocol lands in the adapters branch (#3) of the multi-provider plan.
-    if !matches!(
-        catalog_entry(&resolved.connection.provider_id)?.protocol,
-        ProviderProtocol::Openai
-    ) {
-        return Err(format!(
-            "provider '{}' is not yet supported in chat — multi-protocol adapters arrive in a follow-up update",
-            resolved.connection.provider_id
-        ));
-    }
-
-    let request = OpenAiChatRequest::user_message(resolved.model.clone(), message);
-    let endpoint = format!("{}/chat/completions", resolved.connection.base_url);
+    let request = ChatRequest {
+        base_url: resolved.connection.base_url.clone(),
+        api_key: resolved.api_key.clone(),
+        model: resolved.model.clone(),
+        messages,
+        max_output_tokens: lookup_max_output_tokens(
+            &resolved.connection.provider_id,
+            &resolved.model,
+        ),
+    };
 
     let client = reqwest::Client::new();
-    let mut builder = client.post(endpoint).json(&request);
-    if let Some(api_key) = resolved.api_key {
-        builder = builder.bearer_auth(api_key);
-    }
-
-    let response = builder
-        .send()
-        .await
-        .map_err(|error| format!("failed to send provider request: {error}"))?;
-    let status = response.status();
-    let content = response
-        .text()
-        .await
-        .map_err(|error| format!("failed to read provider response: {error}"))?;
-
-    if status != StatusCode::OK {
-        return Err(format!("provider returned {status}: {content}"));
-    }
-
-    let response: OpenAiChatResponse = serde_json::from_str(&content)
-        .map_err(|error| format!("failed to parse provider response: {error}"))?;
-    let text = response
-        .choices
-        .first()
-        .map(|choice| choice.message.content.trim().to_string())
-        .filter(|content| !content.is_empty())
-        .ok_or_else(|| "provider response did not include a message".to_string())?;
-
+    let text = adapters::complete(entry.protocol, &client, request).await?;
     Ok(ChatMessageResponse { text })
 }
 
@@ -911,5 +922,93 @@ mod tests {
         assert_eq!(validated.base_url, "https://api.openai.com/v1");
         assert_eq!(validated.default_model, "gpt-4o-mini");
         assert_eq!(validated.custom_models, vec!["foo".to_string()]);
+    }
+
+    // ---------- Chat input conversion ----------
+
+    #[test]
+    fn chat_role_parses_known_roles_case_insensitively() {
+        assert_eq!(ChatRole::parse("system").unwrap(), ChatRole::System);
+        assert_eq!(ChatRole::parse("USER").unwrap(), ChatRole::User);
+        assert_eq!(ChatRole::parse(" Assistant ").unwrap(), ChatRole::Assistant);
+    }
+
+    #[test]
+    fn chat_role_rejects_unknown_roles() {
+        let error = ChatRole::parse("tool").unwrap_err();
+        assert!(error.contains("unsupported chat role"));
+    }
+
+    #[test]
+    fn messages_from_input_wraps_legacy_text_as_single_user_message() {
+        let input = ChatMessageInput {
+            text: Some("  hello  ".to_string()),
+            messages: None,
+        };
+        let messages = messages_from_input(&input).unwrap();
+        assert_eq!(messages.len(), 1);
+        assert_eq!(messages[0].role, ChatRole::User);
+        assert_eq!(messages[0].content, "hello");
+    }
+
+    #[test]
+    fn messages_from_input_prefers_explicit_history() {
+        let input = ChatMessageInput {
+            text: Some("ignored".to_string()),
+            messages: Some(vec![
+                WireChatMessage {
+                    role: "system".to_string(),
+                    content: " be terse ".to_string(),
+                },
+                WireChatMessage {
+                    role: "user".to_string(),
+                    content: "hi".to_string(),
+                },
+            ]),
+        };
+        let messages = messages_from_input(&input).unwrap();
+        assert_eq!(messages.len(), 2);
+        assert_eq!(messages[0].role, ChatRole::System);
+        assert_eq!(messages[0].content, "be terse");
+        assert_eq!(messages[1].role, ChatRole::User);
+        assert_eq!(messages[1].content, "hi");
+    }
+
+    #[test]
+    fn messages_from_input_rejects_empty_input() {
+        let input = ChatMessageInput {
+            text: Some("   ".to_string()),
+            messages: None,
+        };
+        assert!(messages_from_input(&input).is_err());
+    }
+
+    #[test]
+    fn messages_from_input_rejects_empty_messages_array() {
+        let input = ChatMessageInput {
+            text: None,
+            messages: Some(vec![]),
+        };
+        assert!(messages_from_input(&input).is_err());
+    }
+
+    #[test]
+    fn messages_from_input_rejects_blank_message_content() {
+        let input = ChatMessageInput {
+            text: None,
+            messages: Some(vec![WireChatMessage {
+                role: "user".to_string(),
+                content: "   ".to_string(),
+            }]),
+        };
+        assert!(messages_from_input(&input).is_err());
+    }
+
+    #[test]
+    fn lookup_max_output_tokens_matches_catalog_value() {
+        let tokens = lookup_max_output_tokens("openai", "gpt-4o-mini");
+        assert_eq!(tokens, Some(16384));
+        assert!(lookup_max_output_tokens("openai", "does-not-exist").is_none());
+        assert!(lookup_max_output_tokens("nope", "gpt-4o-mini").is_none());
     }
 }

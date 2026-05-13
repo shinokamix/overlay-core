@@ -1,3 +1,4 @@
+pub mod adapters;
 pub mod catalog;
 pub mod commands;
 pub mod credentials;
