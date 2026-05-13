@@ -1,30 +1,71 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { toErrorMessage } from "@/shared/lib/to-error-message";
-import { sendChatMessage } from "./api";
+import { useActiveProvider, type ActiveProviderView } from "@/shared/lib/providers";
+import { sendChatMessage, type WireChatMessage } from "./api";
 
-type ChatMessage = {
+export type ChatMessage = {
   id: string;
   role: "assistant" | "user";
   text: string;
 };
 
-const INITIAL_MESSAGES: ChatMessage[] = [
-  {
-    id: "assistant-welcome",
-    role: "assistant",
-    text: "Mock chat is ready. Type any text and press Send.",
-  },
-];
+export type ChatAvailability =
+  | { status: "browser" }
+  | { status: "loading" }
+  | { status: "no-provider" }
+  | { status: "no-api-key"; provider: ActiveProviderView }
+  | { status: "ready"; provider: ActiveProviderView };
 
-export function useChatShell(tauriRuntime: boolean) {
+export type UseChatShellResult = {
+  availability: ChatAvailability;
+  draft: string;
+  isSending: boolean;
+  messages: ChatMessage[];
+  sendError: string;
+  sendStatus: string;
+  setDraft: (value: string) => void;
+  submitDraft: () => Promise<void>;
+};
+
+function deriveAvailability(
+  tauriRuntime: boolean,
+  isLoading: boolean,
+  provider: ActiveProviderView | null | undefined,
+): ChatAvailability {
+  if (!tauriRuntime) {
+    return { status: "browser" };
+  }
+  if (isLoading) {
+    return { status: "loading" };
+  }
+  if (!provider) {
+    return { status: "no-provider" };
+  }
+  if (!provider.hasApiKey) {
+    return { status: "no-api-key", provider };
+  }
+  return { status: "ready", provider };
+}
+
+export function useChatShell(tauriRuntime: boolean): UseChatShellResult {
   const [draft, setDraft] = useState("");
-  const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [sendStatus, setSendStatus] = useState("");
   const [sendError, setSendError] = useState("");
   const [isSending, setIsSending] = useState(false);
   const sequenceRef = useRef(0);
 
+  const activeProviderQuery = useActiveProvider(tauriRuntime);
+  const availability = useMemo(
+    () => deriveAvailability(tauriRuntime, activeProviderQuery.isLoading, activeProviderQuery.data),
+    [tauriRuntime, activeProviderQuery.isLoading, activeProviderQuery.data],
+  );
+
   async function submitDraft() {
+    if (availability.status !== "ready") {
+      return;
+    }
+
     const nextDraft = draft.trim();
 
     if (!nextDraft) {
@@ -41,30 +82,24 @@ export function useChatShell(tauriRuntime: boolean) {
       text: nextDraft,
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    const history: WireChatMessage[] = [
+      ...messages.map((message) => ({
+        role: message.role,
+        content: message.text,
+      })),
+      { role: "user", content: nextDraft },
+    ];
+
+    setMessages((previous) => [...previous, userMessage]);
     setDraft("");
     setSendStatus("");
     setSendError("");
-
-    if (!tauriRuntime) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `assistant-${idPrefix}`,
-          role: "assistant",
-          text: "Mock response: open the desktop runtime to use a configured provider.",
-        },
-      ]);
-      setSendStatus("Message sent in mock mode.");
-      return;
-    }
-
     setIsSending(true);
 
     try {
-      const response = await sendChatMessage(nextDraft);
-      setMessages((prev) => [
-        ...prev,
+      const response = await sendChatMessage(history);
+      setMessages((previous) => [
+        ...previous,
         {
           id: `assistant-${idPrefix}`,
           role: "assistant",
@@ -80,6 +115,7 @@ export function useChatShell(tauriRuntime: boolean) {
   }
 
   return {
+    availability,
     draft,
     isSending,
     messages,
