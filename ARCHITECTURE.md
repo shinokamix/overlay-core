@@ -22,7 +22,7 @@ This file defines module boundaries and dependency direction.
 - `src/features/chat-shell` - chat surface and composer, talks to the active provider via Tauri commands.
 - `src/features/overlay-header` - header controls (settings + close) and drag zone.
 - `src/features/settings-modal` - temporary settings modal shell.
-- `src/features/provider-settings` - provider credential/configuration UI for chat requests.
+- `src/features/provider-settings` - multi-connection provider management UI (list, add/edit, switch active) backed by the shared catalog.
 - `src/features/hotkey-settings` - load/update hotkey bindings.
 - `src/features/overlay-interaction` - passive/interactive mode toggle flow.
 - `src/shared/config` - environment parsing and validation.

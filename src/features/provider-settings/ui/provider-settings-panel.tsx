@@ -1,148 +1,253 @@
+import { useMemo, useState } from "react";
 import {
-  getProviderPreset,
-  PROVIDER_PRESETS,
-  useProviderSettings,
-} from "@/features/provider-settings/model";
+  useActiveProvider,
+  useProviderCatalog,
+  type ProviderCatalogEntry,
+} from "@/shared/lib/providers";
 import { Button } from "@/shared/ui/button";
+import { toErrorMessage } from "@/shared/lib/to-error-message";
+import type { ProviderConnectionView } from "@/features/provider-settings/model/api";
+import {
+  useProviderConnectionMutations,
+  useProviderConnections,
+} from "@/features/provider-settings/model/use-provider-connections";
+import { ConnectionEditor } from "./connection-editor";
 
 type Props = {
   tauriRuntime: boolean;
 };
 
+type View =
+  | { mode: "list" }
+  | { mode: "add" }
+  | { mode: "edit"; connection: ProviderConnectionView };
+
+function providerLabel(
+  catalog: { providers: ProviderCatalogEntry[] } | undefined,
+  providerId: string,
+): string {
+  const entry = catalog?.providers.find((provider) => provider.id === providerId);
+  return entry?.name ?? providerId;
+}
+
 export function ProviderSettingsPanel({ tauriRuntime }: Props) {
-  const {
-    applyPreset,
-    error,
-    form,
-    isLoading,
-    isRemovingCredentials,
-    isSaving,
-    removeCredentials,
-    save,
-    savedSettings,
-    setForm,
-    status,
-  } = useProviderSettings(tauriRuntime);
-  const selectedPreset = getProviderPreset(form.providerId);
-  const controlsDisabled = !tauriRuntime || isLoading || isSaving || isRemovingCredentials;
+  const [view, setView] = useState<View>({ mode: "list" });
+  const [actionError, setActionError] = useState("");
+  const [status, setStatus] = useState("");
+  const [pendingId, setPendingId] = useState<string | null>(null);
+
+  const catalogQuery = useProviderCatalog(tauriRuntime);
+  const connectionsQuery = useProviderConnections(tauriRuntime);
+  const activeQuery = useActiveProvider(tauriRuntime);
+  const mutations = useProviderConnectionMutations();
+
+  const catalog = catalogQuery.data;
+  const connections = useMemo(() => connectionsQuery.data ?? [], [connectionsQuery.data]);
+  const active = activeQuery.data ?? null;
+
+  function clearMessages() {
+    setActionError("");
+    setStatus("");
+  }
+
+  async function makeActive(connection: ProviderConnectionView) {
+    clearMessages();
+    setPendingId(connection.id);
+    try {
+      await mutations.setActive(connection.id, connection.defaultModel);
+      setStatus(`Active: ${connection.displayName} · ${connection.defaultModel}`);
+    } catch (error) {
+      setActionError(`Failed to switch active provider: ${toErrorMessage(error)}`);
+    } finally {
+      setPendingId(null);
+    }
+  }
+
+  async function remove(connection: ProviderConnectionView) {
+    clearMessages();
+    setPendingId(connection.id);
+    try {
+      await mutations.remove(connection.id);
+      setStatus(`${connection.displayName} removed.`);
+    } catch (error) {
+      setActionError(`Failed to remove connection: ${toErrorMessage(error)}`);
+    } finally {
+      setPendingId(null);
+    }
+  }
+
+  if (!tauriRuntime) {
+    return (
+      <section className="rounded-lg border bg-muted/40 p-4 text-sm">
+        <h2 className="font-medium">Providers</h2>
+        <p className="mt-2 text-muted-foreground">
+          Open in Tauri desktop runtime to manage provider connections.
+        </p>
+      </section>
+    );
+  }
+
+  if (catalogQuery.isLoading || connectionsQuery.isLoading) {
+    return (
+      <section className="rounded-lg border bg-muted/40 p-4 text-sm">
+        <h2 className="font-medium">Providers</h2>
+        <p className="mt-2 text-muted-foreground">Loading providers...</p>
+      </section>
+    );
+  }
+
+  if (catalogQuery.error || connectionsQuery.error) {
+    return (
+      <section className="rounded-lg border bg-muted/40 p-4 text-sm">
+        <h2 className="font-medium">Providers</h2>
+        <p className="mt-2 text-destructive">
+          Failed to load providers: {toErrorMessage(catalogQuery.error ?? connectionsQuery.error)}
+        </p>
+      </section>
+    );
+  }
+
+  if (!catalog) {
+    return null;
+  }
+
+  if (view.mode === "add") {
+    return (
+      <section className="rounded-lg border bg-muted/40 p-4 text-sm">
+        <ConnectionEditor
+          mode="add"
+          catalog={catalog}
+          onDone={(created) => {
+            setStatus(`${created.displayName} added.`);
+            setView({ mode: "list" });
+          }}
+          onCancel={() => setView({ mode: "list" })}
+        />
+      </section>
+    );
+  }
+
+  if (view.mode === "edit") {
+    return (
+      <section className="rounded-lg border bg-muted/40 p-4 text-sm">
+        <ConnectionEditor
+          mode="edit"
+          catalog={catalog}
+          initialConnection={view.connection}
+          onDone={(updated) => {
+            setStatus(`${updated.displayName} updated.`);
+            setView({ mode: "list" });
+          }}
+          onCancel={() => setView({ mode: "list" })}
+        />
+      </section>
+    );
+  }
 
   return (
     <section className="rounded-lg border bg-muted/40 p-4 text-sm">
-      <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+      <header className="flex items-start justify-between gap-2">
         <div>
           <h2 className="font-medium">Providers</h2>
           <p className="mt-1 text-muted-foreground">
-            Configure an OpenAI-compatible provider for chat requests. API keys are stored in the OS
-            credential store and are not returned to the UI.
+            Add provider connections and pick which one the chat uses. API keys are stored in the OS
+            credential store and never returned to the UI.
           </p>
         </div>
-
-        <span className="w-fit rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs text-muted-foreground">
-          {savedSettings?.hasApiKey ? "Connected" : "No API key saved"}
-        </span>
-      </div>
-
-      {!tauriRuntime ? (
-        <p className="mt-4 rounded-md border border-border/70 bg-background/80 p-3 text-xs text-muted-foreground">
-          Open in Tauri desktop runtime to save provider credentials and send real chat requests.
-        </p>
-      ) : null}
-
-      <div className="mt-4 grid gap-4">
-        <label className="grid gap-1.5">
-          <span className="text-xs font-medium text-muted-foreground">Provider preset</span>
-          <select
-            value={form.providerId}
-            onChange={(event) => applyPreset(event.target.value)}
-            disabled={controlsDisabled}
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm"
-          >
-            {PROVIDER_PRESETS.map((preset) => (
-              <option key={preset.providerId} value={preset.providerId}>
-                {preset.providerName}
-              </option>
-            ))}
-          </select>
-          <span className="text-xs text-muted-foreground">{selectedPreset.description}</span>
-        </label>
-
-        {form.providerId === "custom" ? (
-          <label className="grid gap-1.5">
-            <span className="text-xs font-medium text-muted-foreground">Provider name</span>
-            <input
-              value={form.providerName}
-              onChange={(event) =>
-                setForm((current) => ({ ...current, providerName: event.target.value }))
-              }
-              disabled={controlsDisabled}
-              className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm"
-            />
-          </label>
-        ) : null}
-
-        <label className="grid gap-1.5">
-          <span className="text-xs font-medium text-muted-foreground">Base URL</span>
-          <input
-            value={form.baseUrl}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, baseUrl: event.target.value }))
-            }
-            disabled={controlsDisabled}
-            placeholder="https://api.example.com/v1"
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm"
-          />
-        </label>
-
-        <label className="grid gap-1.5">
-          <span className="text-xs font-medium text-muted-foreground">Model</span>
-          <input
-            value={form.model}
-            onChange={(event) => setForm((current) => ({ ...current, model: event.target.value }))}
-            disabled={controlsDisabled}
-            placeholder="model-id"
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm"
-          />
-        </label>
-
-        <label className="grid gap-1.5">
-          <span className="text-xs font-medium text-muted-foreground">
-            {selectedPreset.apiKeyLabel}
-          </span>
-          <input
-            type="password"
-            value={form.apiKey}
-            onChange={(event) => setForm((current) => ({ ...current, apiKey: event.target.value }))}
-            disabled={controlsDisabled}
-            placeholder={
-              savedSettings?.hasApiKey
-                ? "Leave blank to keep the saved key"
-                : selectedPreset.apiKeyPlaceholder
-            }
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm"
-          />
-        </label>
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        <Button type="button" size="sm" onClick={() => void save()} disabled={controlsDisabled}>
-          {isSaving ? "Saving..." : "Save provider"}
-        </Button>
         <Button
           type="button"
           size="sm"
-          variant="outline"
-          onClick={() => void removeCredentials()}
-          disabled={controlsDisabled || !savedSettings?.hasApiKey}
+          onClick={() => {
+            clearMessages();
+            setView({ mode: "add" });
+          }}
         >
-          {isRemovingCredentials ? "Removing..." : "Remove API key"}
+          Add provider
         </Button>
-      </div>
+      </header>
 
-      {isLoading ? (
-        <p className="mt-3 text-xs text-muted-foreground">Loading providers...</p>
-      ) : null}
+      {connections.length === 0 ? (
+        <p className="mt-4 rounded-md border border-border/70 bg-background/80 p-3 text-xs text-muted-foreground">
+          No provider connections yet. Add one to enable the chat composer.
+        </p>
+      ) : (
+        <ul className="mt-4 grid gap-2">
+          {connections.map((connection) => {
+            const isActive = active?.connectionId === connection.id;
+            const isBusy = pendingId === connection.id;
+            return (
+              <li
+                key={connection.id}
+                className="flex flex-col gap-2 rounded-md border border-border/70 bg-background/80 p-3 md:flex-row md:items-center md:justify-between"
+              >
+                <div className="grid gap-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{connection.displayName}</span>
+                    <span className="rounded-full border border-border/70 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {providerLabel(catalog, connection.providerId)}
+                    </span>
+                    {isActive ? (
+                      <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] uppercase tracking-wider text-primary-foreground">
+                        Active
+                      </span>
+                    ) : null}
+                    {!connection.hasApiKey ? (
+                      <span className="rounded-full border border-destructive/60 px-2 py-0.5 text-[10px] uppercase tracking-wider text-destructive">
+                        No API key
+                      </span>
+                    ) : null}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    Model:{" "}
+                    <span className="font-mono text-foreground/80">{connection.defaultModel}</span>
+                  </div>
+                  <div className="break-all text-[11px] text-muted-foreground">
+                    {connection.baseUrl}
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-1">
+                  {!isActive ? (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => void makeActive(connection)}
+                      disabled={isBusy}
+                    >
+                      {isBusy ? "Switching..." : "Use this"}
+                    </Button>
+                  ) : null}
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      clearMessages();
+                      setView({ mode: "edit", connection });
+                    }}
+                    disabled={isBusy}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => void remove(connection)}
+                    disabled={isBusy}
+                  >
+                    {isBusy ? "..." : "Remove"}
+                  </Button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
       {status ? <p className="mt-3 text-xs text-muted-foreground">{status}</p> : null}
-      {error ? <p className="mt-2 text-xs text-destructive">{error}</p> : null}
+      {actionError ? <p className="mt-2 text-xs text-destructive">{actionError}</p> : null}
     </section>
   );
 }

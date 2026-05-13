@@ -21,6 +21,7 @@ Write entries from user impact first, then technical detail.
 - Single-instance CLI toggle entrypoint (`overlay-core --toggle-overlay`) to trigger visibility toggle in existing app instance.
 - Hotkeys settings panel in app UI now supports per-action shortcut capture for any key combination (including single-key shortcuts), one-click updates, and full hotkey disable via `Clear`.
 - Providers settings panel now supports OpenAI-compatible provider setup and desktop chat requests through the configured provider, with API keys stored in the OS credential store.
+- Providers settings panel now manages multiple provider connections at once with add/edit/remove, per-row "Use this" to switch the active provider, and custom-model entries. The editor pulls provider metadata from the built-in catalog and only stores user-entered API keys in the OS credential store.
 
 ### Changed
 

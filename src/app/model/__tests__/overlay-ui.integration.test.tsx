@@ -41,6 +41,9 @@ describe("App", () => {
 
     await user.click(screen.getByRole("tab", { name: /providers/i }));
     expect(screen.getByRole("heading", { name: /providers/i })).toBeInTheDocument();
+    expect(
+      screen.getByText(/open in tauri desktop runtime to manage provider connections/i),
+    ).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /^close$/i }));
     expect(screen.queryByRole("dialog", { name: /settings/i })).not.toBeInTheDocument();
