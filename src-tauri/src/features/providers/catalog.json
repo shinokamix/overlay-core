@@ -1,0 +1,796 @@
+{
+  "version": 1,
+  "providers": [
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "protocol": "openai",
+      "defaultBaseUrl": "https://api.openai.com/v1",
+      "auth": "api_key",
+      "apiKeyEnv": "OPENAI_API_KEY",
+      "docsUrl": "https://platform.openai.com/docs",
+      "description": "Official OpenAI hosted models.",
+      "allowsCustomModels": true,
+      "models": [
+        {
+          "id": "gpt-4o",
+          "name": "GPT-4o",
+          "contextWindow": 128000,
+          "maxOutputTokens": 16384,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": true },
+          "knowledgeCutoff": "2024-10"
+        },
+        {
+          "id": "gpt-4o-mini",
+          "name": "GPT-4o mini",
+          "contextWindow": 128000,
+          "maxOutputTokens": 16384,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": false },
+          "knowledgeCutoff": "2024-10",
+          "default": true
+        },
+        {
+          "id": "gpt-4.1",
+          "name": "GPT-4.1",
+          "contextWindow": 1047576,
+          "maxOutputTokens": 32768,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "gpt-4.1-mini",
+          "name": "GPT-4.1 mini",
+          "contextWindow": 1047576,
+          "maxOutputTokens": 32768,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "gpt-4.1-nano",
+          "name": "GPT-4.1 nano",
+          "contextWindow": 1047576,
+          "maxOutputTokens": 32768,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "o3",
+          "name": "o3",
+          "contextWindow": 200000,
+          "maxOutputTokens": 100000,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "o3-mini",
+          "name": "o3-mini",
+          "contextWindow": 200000,
+          "maxOutputTokens": 100000,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "o1",
+          "name": "o1",
+          "contextWindow": 200000,
+          "maxOutputTokens": 100000,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "o1-mini",
+          "name": "o1-mini",
+          "contextWindow": 128000,
+          "maxOutputTokens": 65536,
+          "capabilities": { "vision": false, "toolCalls": false, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "gpt-4-turbo",
+          "name": "GPT-4 Turbo",
+          "contextWindow": 128000,
+          "maxOutputTokens": 4096,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": false }
+        }
+      ]
+    },
+    {
+      "id": "anthropic",
+      "name": "Anthropic",
+      "protocol": "anthropic",
+      "defaultBaseUrl": "https://api.anthropic.com/v1",
+      "auth": "api_key",
+      "apiKeyEnv": "ANTHROPIC_API_KEY",
+      "docsUrl": "https://docs.anthropic.com",
+      "description": "Anthropic Claude models via the Messages API.",
+      "allowsCustomModels": true,
+      "models": [
+        {
+          "id": "claude-opus-4-7",
+          "name": "Claude Opus 4.7",
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": true, "audio": false },
+          "default": true
+        },
+        {
+          "id": "claude-sonnet-4-6",
+          "name": "Claude Sonnet 4.6",
+          "contextWindow": 200000,
+          "maxOutputTokens": 64000,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "claude-haiku-4-5-20251001",
+          "name": "Claude Haiku 4.5",
+          "contextWindow": 200000,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "claude-3-7-sonnet-20250219",
+          "name": "Claude 3.7 Sonnet",
+          "contextWindow": 200000,
+          "maxOutputTokens": 64000,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "claude-3-5-sonnet-20241022",
+          "name": "Claude 3.5 Sonnet",
+          "contextWindow": 200000,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "claude-3-5-haiku-20241022",
+          "name": "Claude 3.5 Haiku",
+          "contextWindow": 200000,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "claude-3-opus-20240229",
+          "name": "Claude 3 Opus",
+          "contextWindow": 200000,
+          "maxOutputTokens": 4096,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": false }
+        }
+      ]
+    },
+    {
+      "id": "google",
+      "name": "Google Gemini",
+      "protocol": "gemini",
+      "defaultBaseUrl": "https://generativelanguage.googleapis.com/v1beta",
+      "auth": "api_key",
+      "apiKeyEnv": "GOOGLE_API_KEY",
+      "docsUrl": "https://ai.google.dev/gemini-api/docs",
+      "description": "Google Gemini models via the Generative Language API.",
+      "allowsCustomModels": true,
+      "models": [
+        {
+          "id": "gemini-2.5-pro",
+          "name": "Gemini 2.5 Pro",
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": true, "audio": true },
+          "default": true
+        },
+        {
+          "id": "gemini-2.5-flash",
+          "name": "Gemini 2.5 Flash",
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": true, "audio": true }
+        },
+        {
+          "id": "gemini-2.5-flash-lite",
+          "name": "Gemini 2.5 Flash Lite",
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": true }
+        },
+        {
+          "id": "gemini-2.0-flash",
+          "name": "Gemini 2.0 Flash",
+          "contextWindow": 1048576,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": true }
+        },
+        {
+          "id": "gemini-2.0-flash-thinking-exp",
+          "name": "Gemini 2.0 Flash Thinking",
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "capabilities": { "vision": true, "toolCalls": false, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "gemini-1.5-pro",
+          "name": "Gemini 1.5 Pro",
+          "contextWindow": 2097152,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": true }
+        },
+        {
+          "id": "gemini-1.5-flash",
+          "name": "Gemini 1.5 Flash",
+          "contextWindow": 1048576,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": true }
+        }
+      ]
+    },
+    {
+      "id": "xai",
+      "name": "xAI Grok",
+      "protocol": "openai",
+      "defaultBaseUrl": "https://api.x.ai/v1",
+      "auth": "api_key",
+      "apiKeyEnv": "XAI_API_KEY",
+      "docsUrl": "https://docs.x.ai",
+      "description": "xAI Grok family via OpenAI-compatible API.",
+      "allowsCustomModels": true,
+      "models": [
+        {
+          "id": "grok-4",
+          "name": "Grok 4",
+          "contextWindow": 256000,
+          "maxOutputTokens": 16384,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": true, "audio": false },
+          "default": true
+        },
+        {
+          "id": "grok-4-fast-reasoning",
+          "name": "Grok 4 Fast (reasoning)",
+          "contextWindow": 2000000,
+          "maxOutputTokens": 16384,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "grok-4-fast-non-reasoning",
+          "name": "Grok 4 Fast",
+          "contextWindow": 2000000,
+          "maxOutputTokens": 16384,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "grok-3",
+          "name": "Grok 3",
+          "contextWindow": 131072,
+          "maxOutputTokens": 16384,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "grok-3-mini",
+          "name": "Grok 3 Mini",
+          "contextWindow": 131072,
+          "maxOutputTokens": 16384,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "grok-2-vision-1212",
+          "name": "Grok 2 Vision",
+          "contextWindow": 32768,
+          "maxOutputTokens": 4096,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": false }
+        }
+      ]
+    },
+    {
+      "id": "deepseek",
+      "name": "DeepSeek",
+      "protocol": "openai",
+      "defaultBaseUrl": "https://api.deepseek.com",
+      "auth": "api_key",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "docsUrl": "https://api-docs.deepseek.com",
+      "description": "DeepSeek chat and reasoning models.",
+      "allowsCustomModels": true,
+      "models": [
+        {
+          "id": "deepseek-chat",
+          "name": "DeepSeek V3 Chat",
+          "contextWindow": 64000,
+          "maxOutputTokens": 8192,
+          "capabilities": {
+            "vision": false,
+            "toolCalls": true,
+            "reasoning": false,
+            "audio": false
+          },
+          "default": true
+        },
+        {
+          "id": "deepseek-reasoner",
+          "name": "DeepSeek R1 Reasoner",
+          "contextWindow": 64000,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": false, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "deepseek-coder",
+          "name": "DeepSeek Coder",
+          "contextWindow": 64000,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        }
+      ]
+    },
+    {
+      "id": "mistral",
+      "name": "Mistral AI",
+      "protocol": "openai",
+      "defaultBaseUrl": "https://api.mistral.ai/v1",
+      "auth": "api_key",
+      "apiKeyEnv": "MISTRAL_API_KEY",
+      "docsUrl": "https://docs.mistral.ai",
+      "description": "Mistral hosted models via OpenAI-compatible API.",
+      "allowsCustomModels": true,
+      "models": [
+        {
+          "id": "mistral-large-latest",
+          "name": "Mistral Large",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": {
+            "vision": false,
+            "toolCalls": true,
+            "reasoning": false,
+            "audio": false
+          },
+          "default": true
+        },
+        {
+          "id": "mistral-medium-latest",
+          "name": "Mistral Medium",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "mistral-small-latest",
+          "name": "Mistral Small",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "codestral-latest",
+          "name": "Codestral",
+          "contextWindow": 262144,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "pixtral-large-latest",
+          "name": "Pixtral Large",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "ministral-8b-latest",
+          "name": "Ministral 8B",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        }
+      ]
+    },
+    {
+      "id": "groq",
+      "name": "Groq",
+      "protocol": "openai",
+      "defaultBaseUrl": "https://api.groq.com/openai/v1",
+      "auth": "api_key",
+      "apiKeyEnv": "GROQ_API_KEY",
+      "docsUrl": "https://console.groq.com/docs",
+      "description": "Low-latency inference for open models on Groq LPU.",
+      "allowsCustomModels": true,
+      "models": [
+        {
+          "id": "llama-3.3-70b-versatile",
+          "name": "Llama 3.3 70B Versatile",
+          "contextWindow": 131072,
+          "maxOutputTokens": 32768,
+          "capabilities": {
+            "vision": false,
+            "toolCalls": true,
+            "reasoning": false,
+            "audio": false
+          },
+          "default": true
+        },
+        {
+          "id": "llama-3.1-8b-instant",
+          "name": "Llama 3.1 8B Instant",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "deepseek-r1-distill-llama-70b",
+          "name": "DeepSeek R1 Distill Llama 70B",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": false, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "mixtral-8x7b-32768",
+          "name": "Mixtral 8x7B",
+          "contextWindow": 32768,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "gemma2-9b-it",
+          "name": "Gemma 2 9B IT",
+          "contextWindow": 8192,
+          "maxOutputTokens": 8192,
+          "capabilities": {
+            "vision": false,
+            "toolCalls": false,
+            "reasoning": false,
+            "audio": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "openrouter",
+      "name": "OpenRouter",
+      "protocol": "openai",
+      "defaultBaseUrl": "https://openrouter.ai/api/v1",
+      "auth": "api_key",
+      "apiKeyEnv": "OPENROUTER_API_KEY",
+      "docsUrl": "https://openrouter.ai/docs",
+      "description": "Unified gateway for hosted models from many providers.",
+      "allowsCustomModels": true,
+      "models": [
+        {
+          "id": "anthropic/claude-opus-4-7",
+          "name": "Claude Opus 4.7 (OpenRouter)",
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": true, "audio": false },
+          "default": true
+        },
+        {
+          "id": "anthropic/claude-sonnet-4-6",
+          "name": "Claude Sonnet 4.6 (OpenRouter)",
+          "contextWindow": 200000,
+          "maxOutputTokens": 64000,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "anthropic/claude-haiku-4-5",
+          "name": "Claude Haiku 4.5 (OpenRouter)",
+          "contextWindow": 200000,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "openai/gpt-4o",
+          "name": "GPT-4o (OpenRouter)",
+          "contextWindow": 128000,
+          "maxOutputTokens": 16384,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "openai/gpt-4.1",
+          "name": "GPT-4.1 (OpenRouter)",
+          "contextWindow": 1047576,
+          "maxOutputTokens": 32768,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "openai/o3",
+          "name": "o3 (OpenRouter)",
+          "contextWindow": 200000,
+          "maxOutputTokens": 100000,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "openai/o3-mini",
+          "name": "o3-mini (OpenRouter)",
+          "contextWindow": 200000,
+          "maxOutputTokens": 100000,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "google/gemini-2.5-pro",
+          "name": "Gemini 2.5 Pro (OpenRouter)",
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "google/gemini-2.5-flash",
+          "name": "Gemini 2.5 Flash (OpenRouter)",
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "x-ai/grok-4",
+          "name": "Grok 4 (OpenRouter)",
+          "contextWindow": 256000,
+          "maxOutputTokens": 16384,
+          "capabilities": { "vision": true, "toolCalls": true, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "deepseek/deepseek-chat",
+          "name": "DeepSeek V3 (OpenRouter)",
+          "contextWindow": 64000,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "deepseek/deepseek-r1",
+          "name": "DeepSeek R1 (OpenRouter)",
+          "contextWindow": 64000,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": false, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "meta-llama/llama-3.3-70b-instruct",
+          "name": "Llama 3.3 70B (OpenRouter)",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "mistralai/mistral-large",
+          "name": "Mistral Large (OpenRouter)",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "qwen/qwen-2.5-coder-32b-instruct",
+          "name": "Qwen 2.5 Coder 32B (OpenRouter)",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        }
+      ]
+    },
+    {
+      "id": "together",
+      "name": "Together AI",
+      "protocol": "openai",
+      "defaultBaseUrl": "https://api.together.xyz/v1",
+      "auth": "api_key",
+      "apiKeyEnv": "TOGETHER_API_KEY",
+      "docsUrl": "https://docs.together.ai",
+      "description": "Open-weight models hosted on Together inference.",
+      "allowsCustomModels": true,
+      "models": [
+        {
+          "id": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+          "name": "Llama 3.3 70B Instruct Turbo",
+          "contextWindow": 131072,
+          "maxOutputTokens": 4096,
+          "capabilities": {
+            "vision": false,
+            "toolCalls": true,
+            "reasoning": false,
+            "audio": false
+          },
+          "default": true
+        },
+        {
+          "id": "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
+          "name": "Llama 3.1 405B Instruct Turbo",
+          "contextWindow": 131072,
+          "maxOutputTokens": 4096,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "Qwen/Qwen2.5-72B-Instruct-Turbo",
+          "name": "Qwen 2.5 72B Instruct Turbo",
+          "contextWindow": 131072,
+          "maxOutputTokens": 4096,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "Qwen/Qwen2.5-Coder-32B-Instruct",
+          "name": "Qwen 2.5 Coder 32B",
+          "contextWindow": 131072,
+          "maxOutputTokens": 4096,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "deepseek-ai/DeepSeek-V3",
+          "name": "DeepSeek V3",
+          "contextWindow": 131072,
+          "maxOutputTokens": 4096,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "deepseek-ai/DeepSeek-R1",
+          "name": "DeepSeek R1",
+          "contextWindow": 131072,
+          "maxOutputTokens": 4096,
+          "capabilities": { "vision": false, "toolCalls": false, "reasoning": true, "audio": false }
+        }
+      ]
+    },
+    {
+      "id": "fireworks",
+      "name": "Fireworks AI",
+      "protocol": "openai",
+      "defaultBaseUrl": "https://api.fireworks.ai/inference/v1",
+      "auth": "api_key",
+      "apiKeyEnv": "FIREWORKS_API_KEY",
+      "docsUrl": "https://docs.fireworks.ai",
+      "description": "Fast inference for open-weight models on Fireworks.",
+      "allowsCustomModels": true,
+      "models": [
+        {
+          "id": "accounts/fireworks/models/llama-v3p3-70b-instruct",
+          "name": "Llama 3.3 70B Instruct",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": {
+            "vision": false,
+            "toolCalls": true,
+            "reasoning": false,
+            "audio": false
+          },
+          "default": true
+        },
+        {
+          "id": "accounts/fireworks/models/llama-v3p1-405b-instruct",
+          "name": "Llama 3.1 405B Instruct",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "accounts/fireworks/models/deepseek-v3",
+          "name": "DeepSeek V3",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "accounts/fireworks/models/deepseek-r1",
+          "name": "DeepSeek R1",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": false, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "accounts/fireworks/models/qwen2p5-coder-32b-instruct",
+          "name": "Qwen 2.5 Coder 32B",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        }
+      ]
+    },
+    {
+      "id": "cerebras",
+      "name": "Cerebras",
+      "protocol": "openai",
+      "defaultBaseUrl": "https://api.cerebras.ai/v1",
+      "auth": "api_key",
+      "apiKeyEnv": "CEREBRAS_API_KEY",
+      "docsUrl": "https://inference-docs.cerebras.ai",
+      "description": "Ultra-fast wafer-scale inference for open models.",
+      "allowsCustomModels": true,
+      "models": [
+        {
+          "id": "llama-3.3-70b",
+          "name": "Llama 3.3 70B",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": {
+            "vision": false,
+            "toolCalls": true,
+            "reasoning": false,
+            "audio": false
+          },
+          "default": true
+        },
+        {
+          "id": "llama3.1-8b",
+          "name": "Llama 3.1 8B",
+          "contextWindow": 8192,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "llama-4-scout-17b-16e-instruct",
+          "name": "Llama 4 Scout 17B 16E",
+          "contextWindow": 131072,
+          "maxOutputTokens": 8192,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        }
+      ]
+    },
+    {
+      "id": "ollama",
+      "name": "Ollama",
+      "protocol": "openai",
+      "defaultBaseUrl": "http://localhost:11434/v1",
+      "auth": "none",
+      "docsUrl": "https://github.com/ollama/ollama",
+      "description": "Local OpenAI-compatible endpoint. Pull the model in Ollama first.",
+      "allowsCustomModels": true,
+      "models": [
+        {
+          "id": "llama3.2",
+          "name": "Llama 3.2",
+          "contextWindow": 131072,
+          "maxOutputTokens": 4096,
+          "capabilities": {
+            "vision": false,
+            "toolCalls": true,
+            "reasoning": false,
+            "audio": false
+          },
+          "default": true
+        },
+        {
+          "id": "llama3.1",
+          "name": "Llama 3.1",
+          "contextWindow": 131072,
+          "maxOutputTokens": 4096,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "qwen2.5-coder",
+          "name": "Qwen 2.5 Coder",
+          "contextWindow": 32768,
+          "maxOutputTokens": 4096,
+          "capabilities": { "vision": false, "toolCalls": true, "reasoning": false, "audio": false }
+        },
+        {
+          "id": "deepseek-r1",
+          "name": "DeepSeek R1",
+          "contextWindow": 32768,
+          "maxOutputTokens": 4096,
+          "capabilities": { "vision": false, "toolCalls": false, "reasoning": true, "audio": false }
+        },
+        {
+          "id": "gemma2",
+          "name": "Gemma 2",
+          "contextWindow": 8192,
+          "maxOutputTokens": 4096,
+          "capabilities": {
+            "vision": false,
+            "toolCalls": false,
+            "reasoning": false,
+            "audio": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "lmstudio",
+      "name": "LM Studio",
+      "protocol": "openai",
+      "defaultBaseUrl": "http://localhost:1234/v1",
+      "auth": "none",
+      "docsUrl": "https://lmstudio.ai/docs",
+      "description": "Local OpenAI-compatible server. Load a model in LM Studio first.",
+      "allowsCustomModels": true,
+      "models": []
+    },
+    {
+      "id": "custom-openai",
+      "name": "Custom OpenAI-compatible",
+      "protocol": "openai",
+      "defaultBaseUrl": "https://example.com/v1",
+      "auth": "api_key",
+      "description": "Any OpenAI-compatible /chat/completions endpoint.",
+      "allowsCustomModels": true,
+      "models": []
+    },
+    {
+      "id": "custom-anthropic",
+      "name": "Custom Anthropic-compatible",
+      "protocol": "anthropic",
+      "defaultBaseUrl": "https://example.com",
+      "auth": "api_key",
+      "description": "Any Anthropic-compatible /v1/messages endpoint.",
+      "allowsCustomModels": true,
+      "models": []
+    }
+  ]
+}

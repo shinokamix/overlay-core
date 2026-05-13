@@ -3,6 +3,7 @@ use tauri::{AppHandle, State};
 use crate::features::hotkeys::model::{HotkeyAction, HotkeyBinding};
 use crate::features::hotkeys::state::HotkeyBindingsState;
 use crate::features::overlay::state::OverlayRuntimeState;
+use crate::features::providers::catalog::ProviderCatalog;
 use crate::features::providers::model::{
     ChatMessageInput, ChatMessageResponse, ProviderSettingsInput, ProviderSettingsView,
 };
@@ -38,6 +39,11 @@ pub fn set_overlay_interaction_enabled_command(
 #[tauri::command]
 pub fn toggle_overlay_interaction_enabled_command(app: AppHandle) -> Result<bool, String> {
     crate::features::overlay::commands::toggle_overlay_interaction_enabled_command(app)
+}
+
+#[tauri::command]
+pub fn list_provider_catalog() -> ProviderCatalog {
+    crate::features::providers::commands::list_provider_catalog()
 }
 
 #[tauri::command]
