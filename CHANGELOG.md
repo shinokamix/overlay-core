@@ -12,7 +12,7 @@ Write entries from user impact first, then technical detail.
 
 ### Added
 
-- Chat-first overlay shell scaffold with a mock message composer (`Message` input + `Send`) and temporary local mock response flow.
+- Chat-first overlay shell with a `Message` input + `Send` composer wired to the configured provider.
 - Header controls with `Settings` trigger and a temporary empty Settings modal.
 
 - Global overlay hotkey support with default `Ctrl+Shift+Space` to hide/show the main overlay window.
@@ -24,6 +24,7 @@ Write entries from user impact first, then technical detail.
 
 ### Changed
 
+- Chat now talks to the configured provider for real: the mock welcome message and "Mock response" placeholder are gone, the header reads "Chat", and the composer maintains and sends the full conversation history. When the desktop runtime is unavailable, no provider is connected, or the active provider has no API key, the composer is disabled and an in-place CTA points to Settings → Providers.
 - Main overlay UI now uses a chat-oriented layout with a draggable header region and focus on conversational input flow.
 - Settings modal is now rebuilt with shadcn dialog/tabs primitives and structured into category navigation (`MCP servers`, `Hotkeys`, `Skills`, `Providers`) with a dedicated content area.
 - Desktop capability permissions now explicitly allow header drag-start and app close actions.

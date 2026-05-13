@@ -19,7 +19,7 @@ This file defines module boundaries and dependency direction.
 - `src/app/main.tsx` - bootstrap and root providers.
 - `src/app/App.tsx` - shell layout and feature composition.
 - `src/app/model` - global overlay/window state and shell hooks.
-- `src/features/chat-shell` - chat-like mock conversation surface and composer.
+- `src/features/chat-shell` - chat surface and composer, talks to the active provider via Tauri commands.
 - `src/features/overlay-header` - header controls (settings + close) and drag zone.
 - `src/features/settings-modal` - temporary settings modal shell.
 - `src/features/provider-settings` - provider credential/configuration UI for chat requests.

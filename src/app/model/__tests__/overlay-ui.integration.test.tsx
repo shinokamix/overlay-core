@@ -18,8 +18,13 @@ describe("App", () => {
     const user = userEvent.setup();
     renderApp();
 
-    expect(screen.getByRole("heading", { name: /ai chat mock/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /^chat$/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /send/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /send/i })).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: /message/i })).toBeDisabled();
+    expect(
+      screen.getByText(/open the desktop runtime to chat with a configured provider/i),
+    ).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /settings/i }));
     expect(screen.getByRole("dialog", { name: /settings/i })).toBeInTheDocument();
@@ -39,11 +44,5 @@ describe("App", () => {
 
     await user.click(screen.getByRole("button", { name: /^close$/i }));
     expect(screen.queryByRole("dialog", { name: /settings/i })).not.toBeInTheDocument();
-
-    await user.type(screen.getByRole("textbox", { name: /message/i }), "hello");
-    await user.click(screen.getByRole("button", { name: /send/i }));
-
-    expect(screen.getByText("hello")).toBeInTheDocument();
-    expect(screen.getByText(/mock response:/i)).toBeInTheDocument();
   });
 });
