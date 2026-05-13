@@ -2,12 +2,47 @@ use tauri::AppHandle;
 
 use crate::features::providers::catalog::{self, ProviderCatalog};
 use crate::features::providers::model::{
-    ChatMessageInput, ChatMessageResponse, ProviderSettingsInput, ProviderSettingsView,
+    ActiveProviderView, ActiveSelectionInput, ChatMessageInput, ChatMessageResponse,
+    NewProviderConnectionInput, ProviderConnectionView, ProviderSettingsInput,
+    ProviderSettingsView, UpdateProviderConnectionInput,
 };
 use crate::features::providers::service;
 
 pub fn list_provider_catalog() -> ProviderCatalog {
     catalog::catalog().clone()
+}
+
+pub fn list_provider_connections(app: AppHandle) -> Result<Vec<ProviderConnectionView>, String> {
+    service::list_provider_connections(&app)
+}
+
+pub fn get_active_provider(app: AppHandle) -> Result<Option<ActiveProviderView>, String> {
+    service::get_active_provider(&app)
+}
+
+pub fn add_provider_connection(
+    app: AppHandle,
+    input: NewProviderConnectionInput,
+) -> Result<ProviderConnectionView, String> {
+    service::add_provider_connection(&app, input)
+}
+
+pub fn update_provider_connection(
+    app: AppHandle,
+    input: UpdateProviderConnectionInput,
+) -> Result<ProviderConnectionView, String> {
+    service::update_provider_connection(&app, input)
+}
+
+pub fn remove_provider_connection(app: AppHandle, id: String) -> Result<(), String> {
+    service::remove_provider_connection(&app, id)
+}
+
+pub fn set_active_provider(
+    app: AppHandle,
+    input: ActiveSelectionInput,
+) -> Result<ActiveProviderView, String> {
+    service::set_active_provider(&app, input)
 }
 
 pub fn get_provider_settings(app: AppHandle) -> Result<Option<ProviderSettingsView>, String> {
