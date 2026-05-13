@@ -143,53 +143,57 @@ pub struct LegacyProviderConfigFile {
     pub active: Option<ProviderSettings>,
 }
 
-// ---------- Chat message wire types (unchanged in this branch) ----------
+// ---------- Chat wire types ----------
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ChatRole {
+    System,
+    User,
+    Assistant,
+}
+
+impl ChatRole {
+    pub fn parse(role: &str) -> Result<Self, String> {
+        match role.trim().to_ascii_lowercase().as_str() {
+            "system" => Ok(ChatRole::System),
+            "user" => Ok(ChatRole::User),
+            "assistant" => Ok(ChatRole::Assistant),
+            other => Err(format!(
+                "unsupported chat role '{other}' (expected system|user|assistant)"
+            )),
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct ChatMessage {
+    pub role: ChatRole,
+    pub content: String,
+}
+
+/// Wire-level message coming from the UI. We keep it as plain strings for
+/// flexibility and convert to the typed [`ChatMessage`] internally.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WireChatMessage {
+    pub role: String,
+    pub content: String,
+}
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ChatMessageInput {
-    pub text: String,
+    /// Convenience field for single-shot messages. Kept for backward
+    /// compatibility with the existing chat UI; new callers should send
+    /// `messages` instead. When both are present, `messages` wins.
+    #[serde(default)]
+    pub text: Option<String>,
+    #[serde(default)]
+    pub messages: Option<Vec<WireChatMessage>>,
 }
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ChatMessageResponse {
     pub text: String,
-}
-
-#[derive(Deserialize, Serialize)]
-pub struct OpenAiChatMessage {
-    pub role: String,
-    pub content: String,
-}
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct OpenAiChatRequest {
-    pub model: String,
-    pub messages: Vec<OpenAiChatMessage>,
-    pub stream: bool,
-}
-
-impl OpenAiChatRequest {
-    pub fn user_message(model: String, text: String) -> Self {
-        Self {
-            model,
-            messages: vec![OpenAiChatMessage {
-                role: "user".to_string(),
-                content: text,
-            }],
-            stream: false,
-        }
-    }
-}
-
-#[derive(Deserialize)]
-pub struct OpenAiChatResponse {
-    pub choices: Vec<OpenAiChatChoice>,
-}
-
-#[derive(Deserialize)]
-pub struct OpenAiChatChoice {
-    pub message: OpenAiChatMessage,
 }
