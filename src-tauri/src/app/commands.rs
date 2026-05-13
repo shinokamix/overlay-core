@@ -5,7 +5,9 @@ use crate::features::hotkeys::state::HotkeyBindingsState;
 use crate::features::overlay::state::OverlayRuntimeState;
 use crate::features::providers::catalog::ProviderCatalog;
 use crate::features::providers::model::{
-    ChatMessageInput, ChatMessageResponse, ProviderSettingsInput, ProviderSettingsView,
+    ActiveProviderView, ActiveSelectionInput, ChatMessageInput, ChatMessageResponse,
+    NewProviderConnectionInput, ProviderConnectionView, ProviderSettingsInput,
+    ProviderSettingsView, UpdateProviderConnectionInput,
 };
 
 #[tauri::command]
@@ -44,6 +46,45 @@ pub fn toggle_overlay_interaction_enabled_command(app: AppHandle) -> Result<bool
 #[tauri::command]
 pub fn list_provider_catalog() -> ProviderCatalog {
     crate::features::providers::commands::list_provider_catalog()
+}
+
+#[tauri::command]
+pub fn list_provider_connections(app: AppHandle) -> Result<Vec<ProviderConnectionView>, String> {
+    crate::features::providers::commands::list_provider_connections(app)
+}
+
+#[tauri::command]
+pub fn get_active_provider(app: AppHandle) -> Result<Option<ActiveProviderView>, String> {
+    crate::features::providers::commands::get_active_provider(app)
+}
+
+#[tauri::command]
+pub fn add_provider_connection(
+    app: AppHandle,
+    input: NewProviderConnectionInput,
+) -> Result<ProviderConnectionView, String> {
+    crate::features::providers::commands::add_provider_connection(app, input)
+}
+
+#[tauri::command]
+pub fn update_provider_connection(
+    app: AppHandle,
+    input: UpdateProviderConnectionInput,
+) -> Result<ProviderConnectionView, String> {
+    crate::features::providers::commands::update_provider_connection(app, input)
+}
+
+#[tauri::command]
+pub fn remove_provider_connection(app: AppHandle, id: String) -> Result<(), String> {
+    crate::features::providers::commands::remove_provider_connection(app, id)
+}
+
+#[tauri::command]
+pub fn set_active_provider(
+    app: AppHandle,
+    input: ActiveSelectionInput,
+) -> Result<ActiveProviderView, String> {
+    crate::features::providers::commands::set_active_provider(app, input)
 }
 
 #[tauri::command]
