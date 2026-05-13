@@ -33,6 +33,7 @@ pub fn run() {
             commands::get_overlay_interaction_enabled,
             commands::set_overlay_interaction_enabled_command,
             commands::toggle_overlay_interaction_enabled_command,
+            commands::list_provider_catalog,
             commands::get_provider_settings,
             commands::save_provider_settings,
             commands::remove_provider_credentials,

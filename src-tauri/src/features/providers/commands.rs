@@ -1,9 +1,14 @@
 use tauri::AppHandle;
 
+use crate::features::providers::catalog::{self, ProviderCatalog};
 use crate::features::providers::model::{
     ChatMessageInput, ChatMessageResponse, ProviderSettingsInput, ProviderSettingsView,
 };
 use crate::features::providers::service;
+
+pub fn list_provider_catalog() -> ProviderCatalog {
+    catalog::catalog().clone()
+}
 
 pub fn get_provider_settings(app: AppHandle) -> Result<Option<ProviderSettingsView>, String> {
     service::get_provider_settings(&app)
