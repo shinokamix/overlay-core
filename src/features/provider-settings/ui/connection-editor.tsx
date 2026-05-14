@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { findCatalogProvider, type ProviderCatalog } from "@/shared/lib/providers";
+import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { toErrorMessage } from "@/shared/lib/to-error-message";
 import type { ProviderConnectionView } from "@/features/provider-settings/model/api";
@@ -22,6 +23,11 @@ type Props = {
   onDone: (connection: ProviderConnectionView) => void;
   onCancel: () => void;
 };
+
+const fieldLabelClass =
+  "text-[10px] font-semibold uppercase tracking-[0.12em] text-[color:var(--text-muted-strong)]";
+const inputClass =
+  "h-9 rounded-md border border-[color:var(--input)] bg-surface-1 px-3 text-xs text-foreground placeholder:text-[color:var(--text-muted-strong)] outline-none transition-colors focus:border-indigo-500/50 disabled:cursor-not-allowed disabled:opacity-60";
 
 function defaultInitialState(
   mode: ConnectionFormMode,
@@ -127,168 +133,181 @@ export function ConnectionEditor({ mode, catalog, initialConnection, onDone, onC
 
   return (
     <form
-      className="grid gap-4"
+      className="flex flex-col gap-4"
       onSubmit={(event) => {
         event.preventDefault();
         void submit();
       }}
     >
-      <header className="flex items-baseline justify-between gap-2">
-        <h3 className="text-sm font-medium">
-          {mode === "add" ? "Add provider connection" : `Edit ${initialConnection?.displayName}`}
-        </h3>
-        <span className="text-xs text-muted-foreground">
-          {provider?.protocol ? `Protocol: ${provider.protocol}` : null}
-        </span>
+      <header className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--text-muted-strong)]">
+            {mode === "add" ? "New connection" : "Edit connection"}
+          </p>
+          <h3 className="mt-1 text-base font-semibold text-foreground">
+            {mode === "add" ? "Add provider connection" : initialConnection?.displayName}
+          </h3>
+        </div>
+        {provider?.protocol ? (
+          <Badge tone="indigo" className="font-mono">
+            {provider.protocol}
+          </Badge>
+        ) : null}
       </header>
 
-      <label className="grid gap-1.5">
-        <span className="text-xs font-medium text-muted-foreground">Provider</span>
-        <select
-          value={state.providerId}
-          onChange={(event) => applyProvider(event.target.value)}
-          disabled={mode === "edit" || isSubmitting}
-          className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm disabled:opacity-60"
-        >
-          {catalog.providers.map((entry) => (
-            <option key={entry.id} value={entry.id}>
-              {entry.name}
-            </option>
-          ))}
-        </select>
-        {provider?.description ? (
-          <span className="text-xs text-muted-foreground">{provider.description}</span>
-        ) : null}
-      </label>
-
-      <label className="grid gap-1.5">
-        <span className="text-xs font-medium text-muted-foreground">Display name</span>
-        <input
-          value={state.displayName}
-          onChange={(event) => patch({ displayName: event.target.value })}
-          disabled={isSubmitting}
-          className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm"
-        />
-      </label>
-
-      <label className="grid gap-1.5">
-        <span className="flex items-center justify-between text-xs font-medium text-muted-foreground">
-          <span>Base URL</span>
-          {provider && state.baseUrl !== provider.defaultBaseUrl ? (
-            <button
-              type="button"
-              onClick={resetBaseUrl}
-              disabled={isSubmitting}
-              className="text-xs font-normal text-foreground/70 underline-offset-2 hover:underline"
-            >
-              Reset to default
-            </button>
-          ) : null}
-        </span>
-        <input
-          value={state.baseUrl}
-          onChange={(event) => patch({ baseUrl: event.target.value })}
-          disabled={isSubmitting}
-          placeholder="https://api.example.com/v1"
-          className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm"
-        />
-      </label>
-
-      <label className="grid gap-1.5">
-        <span className="text-xs font-medium text-muted-foreground">Default model</span>
-        <input
-          list={`models-${state.providerId}`}
-          value={state.defaultModel}
-          onChange={(event) => patch({ defaultModel: event.target.value })}
-          disabled={isSubmitting}
-          placeholder="model-id"
-          className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm"
-        />
-        <datalist id={`models-${state.providerId}`}>
-          {options.map((model) => (
-            <option key={model} value={model} />
-          ))}
-        </datalist>
-      </label>
-
-      <fieldset className="grid gap-2 rounded-md border border-border/70 p-3">
-        <legend className="px-1 text-xs font-medium text-muted-foreground">Custom models</legend>
-        {state.customModels.length === 0 ? (
-          <p className="text-xs text-muted-foreground">
-            Catalog models are always available. Add user-supplied model ids if your endpoint
-            exposes models not in the catalog.
-          </p>
-        ) : (
-          <ul className="flex flex-wrap gap-2">
-            {state.customModels.map((model) => (
-              <li
-                key={model}
-                className="flex items-center gap-1 rounded-full border border-border/70 bg-background px-2 py-0.5 text-xs"
-              >
-                <span>{model}</span>
-                <button
-                  type="button"
-                  onClick={() => setState((current) => removeCustomModel(current, model))}
-                  disabled={isSubmitting}
-                  aria-label={`Remove ${model}`}
-                  className="text-muted-foreground hover:text-destructive"
-                >
-                  ×
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="flex items-center gap-2">
-          <input
-            value={state.customModelDraft}
-            onChange={(event) => patch({ customModelDraft: event.target.value })}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                event.preventDefault();
-                setState((current) => addCustomModel(current));
-              }
-            }}
-            disabled={isSubmitting}
-            placeholder="add-model-id"
-            className="h-9 flex-1 rounded-md border border-input bg-background px-3 text-sm shadow-sm"
-          />
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={() => setState((current) => addCustomModel(current))}
-            disabled={isSubmitting || state.customModelDraft.trim().length === 0}
+      <div className="grid gap-4">
+        <label className="grid gap-1.5">
+          <span className={fieldLabelClass}>Provider</span>
+          <select
+            value={state.providerId}
+            onChange={(event) => applyProvider(event.target.value)}
+            disabled={mode === "edit" || isSubmitting}
+            className={inputClass}
           >
-            Add
-          </Button>
-        </div>
-      </fieldset>
+            {catalog.providers.map((entry) => (
+              <option key={entry.id} value={entry.id}>
+                {entry.name}
+              </option>
+            ))}
+          </select>
+          {provider?.description ? (
+            <span className="text-[11px] text-muted-foreground">{provider.description}</span>
+          ) : null}
+        </label>
 
-      <label className="grid gap-1.5">
-        <span className="text-xs font-medium text-muted-foreground">
-          API key {apiKeyRequired ? null : "(not required)"}
-        </span>
-        <input
-          type="password"
-          value={state.apiKey}
-          onChange={(event) => patch({ apiKey: event.target.value })}
-          disabled={isSubmitting}
-          placeholder={
-            initialConnection?.hasApiKey ? "Leave blank to keep the saved key" : "Provider token"
-          }
-          className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm"
-        />
-      </label>
+        <label className="grid gap-1.5">
+          <span className={fieldLabelClass}>Display name</span>
+          <input
+            value={state.displayName}
+            onChange={(event) => patch({ displayName: event.target.value })}
+            disabled={isSubmitting}
+            className={inputClass}
+          />
+        </label>
 
-      {error ? <p className="text-xs text-destructive">{error}</p> : null}
+        <label className="grid gap-1.5">
+          <span className={`flex items-center justify-between ${fieldLabelClass}`}>
+            <span>Base URL</span>
+            {provider && state.baseUrl !== provider.defaultBaseUrl ? (
+              <button
+                type="button"
+                onClick={resetBaseUrl}
+                disabled={isSubmitting}
+                className="text-[10px] font-normal normal-case tracking-normal text-indigo-200 underline-offset-2 hover:underline"
+              >
+                Reset to default
+              </button>
+            ) : null}
+          </span>
+          <input
+            value={state.baseUrl}
+            onChange={(event) => patch({ baseUrl: event.target.value })}
+            disabled={isSubmitting}
+            placeholder="https://api.example.com/v1"
+            className={`${inputClass} font-mono`}
+          />
+        </label>
 
-      <footer className="flex justify-end gap-2">
+        <label className="grid gap-1.5">
+          <span className={fieldLabelClass}>Default model</span>
+          <input
+            list={`models-${state.providerId}`}
+            value={state.defaultModel}
+            onChange={(event) => patch({ defaultModel: event.target.value })}
+            disabled={isSubmitting}
+            placeholder="model-id"
+            className={`${inputClass} font-mono`}
+          />
+          <datalist id={`models-${state.providerId}`}>
+            {options.map((model) => (
+              <option key={model} value={model} />
+            ))}
+          </datalist>
+        </label>
+
+        <fieldset className="grid gap-2 rounded-md border border-border bg-surface-1 p-3">
+          <legend className={`${fieldLabelClass} px-1`}>Custom models</legend>
+          {state.customModels.length === 0 ? (
+            <p className="text-[11px] text-muted-foreground">
+              Catalog models are always available. Add user-supplied model ids if your endpoint
+              exposes models not in the catalog.
+            </p>
+          ) : (
+            <ul className="flex flex-wrap gap-1.5">
+              {state.customModels.map((model) => (
+                <li
+                  key={model}
+                  className="flex items-center gap-1 rounded-full border border-[color:var(--input)] bg-surface-2 px-2 py-0.5 font-mono text-[10px] text-foreground"
+                >
+                  <span>{model}</span>
+                  <button
+                    type="button"
+                    onClick={() => setState((current) => removeCustomModel(current, model))}
+                    disabled={isSubmitting}
+                    aria-label={`Remove ${model}`}
+                    className="ml-1 text-muted-foreground transition-colors hover:text-rose-400"
+                  >
+                    ×
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <div className="flex items-center gap-2">
+            <input
+              value={state.customModelDraft}
+              onChange={(event) => patch({ customModelDraft: event.target.value })}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  setState((current) => addCustomModel(current));
+                }
+              }}
+              disabled={isSubmitting}
+              placeholder="add-model-id"
+              className={`${inputClass} font-mono`}
+            />
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={() => setState((current) => addCustomModel(current))}
+              disabled={isSubmitting || state.customModelDraft.trim().length === 0}
+            >
+              Add
+            </Button>
+          </div>
+        </fieldset>
+
+        <label className="grid gap-1.5">
+          <span className={fieldLabelClass}>
+            API key {apiKeyRequired ? null : <span className="normal-case">(not required)</span>}
+          </span>
+          <input
+            type="password"
+            value={state.apiKey}
+            onChange={(event) => patch({ apiKey: event.target.value })}
+            disabled={isSubmitting}
+            placeholder={
+              initialConnection?.hasApiKey ? "Leave blank to keep the saved key" : "Provider token"
+            }
+            className={inputClass}
+          />
+        </label>
+      </div>
+
+      {error ? (
+        <p className="rounded-md border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-[11px] text-rose-400">
+          {error}
+        </p>
+      ) : null}
+
+      <footer className="flex items-center justify-end gap-2 pt-1">
         <Button type="button" size="sm" variant="ghost" onClick={onCancel} disabled={isSubmitting}>
           Cancel
         </Button>
-        <Button type="submit" size="sm" disabled={isSubmitting}>
+        <Button type="submit" size="sm" variant="primary" disabled={isSubmitting}>
           {isSubmitting ? "Saving..." : mode === "add" ? "Add connection" : "Save changes"}
         </Button>
       </footer>

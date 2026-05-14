@@ -11,8 +11,8 @@ type Props = {
 
 export function SettingsModalContent({ sections, sectionContent }: Props) {
   return (
-    <ScrollArea className="min-h-0 flex-1">
-      <div className="p-4">
+    <ScrollArea className="min-h-0 flex-1 bg-card">
+      <div className="px-5 py-4">
         {sections.map((section) => (
           <TabsContent key={section.id} value={section.id} className="m-0 h-full">
             {sectionContent?.[section.id] ?? <SettingsCategoryPlaceholder section={section} />}
