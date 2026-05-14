@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Plus } from "lucide-react";
 import {
   useActiveProvider,
   useProviderCatalog,
@@ -6,6 +7,7 @@ import {
 } from "@/shared/lib/providers";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
+import { PanelHeader } from "@/shared/ui/panel-header";
 import { toErrorMessage } from "@/shared/lib/to-error-message";
 import { cn } from "@/shared/lib/utils";
 import type { ProviderConnectionView } from "@/features/provider-settings/model/api";
@@ -30,30 +32,6 @@ function providerLabel(
 ): string {
   const entry = catalog?.providers.find((provider) => provider.id === providerId);
   return entry?.name ?? providerId;
-}
-
-function PlusIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-      <path d="M12 5v14M5 12h14" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function PanelHeader({ title, description }: { title: string; description?: string }) {
-  return (
-    <header>
-      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--text-muted-strong)]">
-        Providers
-      </p>
-      <h2 className="mt-1 text-base font-semibold text-foreground">{title}</h2>
-      {description ? (
-        <p className="mt-1 max-w-prose text-xs leading-relaxed text-muted-foreground">
-          {description}
-        </p>
-      ) : null}
-    </header>
-  );
 }
 
 function MessageRow({ status, error }: { status?: string; error?: string }) {
@@ -118,6 +96,7 @@ export function ProviderSettingsPanel({ tauriRuntime }: Props) {
     return (
       <section className="flex flex-col gap-3">
         <PanelHeader
+          eyebrow="Providers"
           title="Providers"
           description="Open in Tauri desktop runtime to manage provider connections."
         />
@@ -128,7 +107,7 @@ export function ProviderSettingsPanel({ tauriRuntime }: Props) {
   if (catalogQuery.isLoading || connectionsQuery.isLoading) {
     return (
       <section className="flex flex-col gap-3">
-        <PanelHeader title="Providers" description="Loading providers..." />
+        <PanelHeader eyebrow="Providers" title="Providers" description="Loading providers..." />
       </section>
     );
   }
@@ -136,7 +115,7 @@ export function ProviderSettingsPanel({ tauriRuntime }: Props) {
   if (catalogQuery.error || connectionsQuery.error) {
     return (
       <section className="flex flex-col gap-3">
-        <PanelHeader title="Providers" />
+        <PanelHeader eyebrow="Providers" title="Providers" />
         <p className="rounded-md border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-400">
           Failed to load providers: {toErrorMessage(catalogQuery.error ?? connectionsQuery.error)}
         </p>
@@ -181,6 +160,7 @@ export function ProviderSettingsPanel({ tauriRuntime }: Props) {
     <section className="flex flex-col gap-4">
       <div className="flex items-start justify-between gap-3">
         <PanelHeader
+          eyebrow="Providers"
           title="Connections"
           description="Add provider connections and pick which one the chat uses. API keys are stored in the OS credential store and never returned to the UI."
         />
@@ -193,7 +173,7 @@ export function ProviderSettingsPanel({ tauriRuntime }: Props) {
             setView({ mode: "add" });
           }}
         >
-          <PlusIcon /> Add provider
+          <Plus /> Add provider
         </Button>
       </div>
 

@@ -1,6 +1,8 @@
+import { ArrowUp, User } from "lucide-react";
 import type { ChatAvailability } from "@/features/chat-shell/model/use-chat-shell";
 import { useChatShell } from "@/features/chat-shell/model/use-chat-shell";
 import { Badge } from "@/shared/ui/badge";
+import { PanelHeader } from "@/shared/ui/panel-header";
 import { cn } from "@/shared/lib/utils";
 
 type Props = {
@@ -64,23 +66,6 @@ function providerModel(availability: ChatAvailability): string | null {
   return null;
 }
 
-function SendIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-      <path d="M12 20V4M5 11l7-7 7 7" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function UserGlyph() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
-      <circle cx="12" cy="8" r="3.5" />
-      <path d="M5 20c1.5-3.5 4.2-5 7-5s5.5 1.5 7 5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 export function ChatShell({ tauriRuntime }: Props) {
   const { availability, draft, isSending, messages, sendError, sendStatus, setDraft, submitDraft } =
     useChatShell(tauriRuntime);
@@ -92,13 +77,8 @@ export function ChatShell({ tauriRuntime }: Props) {
 
   return (
     <section className="flex flex-1 flex-col gap-4 px-4 py-4">
-      <div className="flex items-end justify-between gap-3">
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--text-muted-strong)]">
-            Overlay Chat
-          </p>
-          <h1 className="mt-1 text-lg font-semibold leading-tight tracking-tight">Chat</h1>
-        </div>
+      <div className="flex items-start justify-between gap-3">
+        <PanelHeader eyebrow="Overlay Chat" title="Chat" as="h1" />
         <div className="flex flex-col items-end gap-1.5">
           <StatusIndicator availability={availability} />
           {model ? (
@@ -132,7 +112,7 @@ export function ChatShell({ tauriRuntime }: Props) {
                   )}
                   aria-hidden
                 >
-                  {isUser ? <UserGlyph /> : "AI"}
+                  {isUser ? <User className="size-3.5" /> : "AI"}
                 </span>
                 <p
                   className={cn(
@@ -200,7 +180,7 @@ export function ChatShell({ tauriRuntime }: Props) {
           title="Send"
           className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-white shadow-sm transition-colors hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:size-4"
         >
-          <SendIcon />
+          <ArrowUp />
           <span className="sr-only">{isSending ? "Sending..." : "Send"}</span>
         </button>
       </form>

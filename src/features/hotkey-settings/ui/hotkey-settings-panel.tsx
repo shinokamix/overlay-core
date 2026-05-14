@@ -3,6 +3,7 @@ import { useHotkeySettings } from "@/features/hotkey-settings/model";
 import { toHotkeyAccelerator } from "@/features/hotkey-settings/model/hotkey-accelerator";
 import type { HotkeyAction } from "@/shared/config/hotkeys";
 import { Button } from "@/shared/ui/button";
+import { PanelHeader } from "@/shared/ui/panel-header";
 
 type Props = {
   tauriRuntime: boolean;
@@ -75,15 +76,7 @@ export function HotkeySettingsPanel({ tauriRuntime }: Props) {
 
   return (
     <section className="flex flex-col gap-4">
-      <header>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--text-muted-strong)]">
-          Hotkeys
-        </p>
-        <h2 className="mt-1 text-base font-semibold text-foreground">Keyboard shortcuts</h2>
-        <p className="mt-1 max-w-prose text-xs leading-relaxed text-muted-foreground">
-          {hotkeySupportHint}
-        </p>
-      </header>
+      <PanelHeader eyebrow="Hotkeys" title="Keyboard shortcuts" description={hotkeySupportHint} />
 
       <ul className="flex flex-col gap-2">
         {hotkeyRows.map((hotkeyRow) => {

@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
+import { X } from "lucide-react";
 import { findCatalogProvider, type ProviderCatalog } from "@/shared/lib/providers";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
+import { PanelHeader } from "@/shared/ui/panel-header";
 import { toErrorMessage } from "@/shared/lib/to-error-message";
 import type { ProviderConnectionView } from "@/features/provider-settings/model/api";
 import {
@@ -139,21 +141,20 @@ export function ConnectionEditor({ mode, catalog, initialConnection, onDone, onC
         void submit();
       }}
     >
-      <header className="flex flex-wrap items-baseline justify-between gap-2">
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--text-muted-strong)]">
-            {mode === "add" ? "New connection" : "Edit connection"}
-          </p>
-          <h3 className="mt-1 text-base font-semibold text-foreground">
-            {mode === "add" ? "Add provider connection" : initialConnection?.displayName}
-          </h3>
-        </div>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <PanelHeader
+          as="h3"
+          eyebrow={mode === "add" ? "New connection" : "Edit connection"}
+          title={
+            mode === "add" ? "Add provider connection" : (initialConnection?.displayName ?? "")
+          }
+        />
         {provider?.protocol ? (
           <Badge tone="indigo" className="font-mono">
             {provider.protocol}
           </Badge>
         ) : null}
-      </header>
+      </div>
 
       <div className="grid gap-4">
         <label className="grid gap-1.5">
@@ -245,9 +246,9 @@ export function ConnectionEditor({ mode, catalog, initialConnection, onDone, onC
                     onClick={() => setState((current) => removeCustomModel(current, model))}
                     disabled={isSubmitting}
                     aria-label={`Remove ${model}`}
-                    className="ml-1 text-muted-foreground transition-colors hover:text-rose-400"
+                    className="ml-1 flex items-center text-muted-foreground transition-colors hover:text-rose-400"
                   >
-                    ×
+                    <X className="size-3" />
                   </button>
                 </li>
               ))}

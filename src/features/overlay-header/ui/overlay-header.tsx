@@ -1,3 +1,4 @@
+import { Settings2, X } from "lucide-react";
 import { useOverlayWindowControls } from "@/features/overlay-header/model/use-overlay-window-controls";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -18,23 +19,6 @@ function LogoMark() {
         <circle cx="9" cy="9" r="2.5" />
       </svg>
     </span>
-  );
-}
-
-function GearIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.11-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06A2 2 0 1 1 4.13 16.92l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.65 8.85a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1.03-1.56V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z" />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-      <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
-    </svg>
   );
 }
 
@@ -71,7 +55,7 @@ export function OverlayHeader({ tauriRuntime, onOpenSettings }: Props) {
         aria-label="Settings"
         title="Settings"
       >
-        <GearIcon />
+        <Settings2 />
       </Button>
 
       <Button
@@ -83,7 +67,7 @@ export function OverlayHeader({ tauriRuntime, onOpenSettings }: Props) {
         aria-label={isClosePending ? "Closing..." : "Close app"}
         title={isClosePending ? "Closing..." : "Close app"}
       >
-        <CloseIcon />
+        <X />
       </Button>
     </header>
   );
