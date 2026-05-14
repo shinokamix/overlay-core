@@ -74,34 +74,50 @@ export function HotkeySettingsPanel({ tauriRuntime }: Props) {
   }
 
   return (
-    <section className="rounded-lg border bg-muted/40 p-4 text-sm">
-      <p className="font-medium">Hotkeys</p>
-      <p className="mt-1 text-muted-foreground">{hotkeySupportHint}</p>
+    <section className="flex flex-col gap-4">
+      <header>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--text-muted-strong)]">
+          Hotkeys
+        </p>
+        <h2 className="mt-1 text-base font-semibold text-foreground">Keyboard shortcuts</h2>
+        <p className="mt-1 max-w-prose text-xs leading-relaxed text-muted-foreground">
+          {hotkeySupportHint}
+        </p>
+      </header>
 
-      <div className="mt-4 space-y-3">
+      <ul className="flex flex-col gap-2">
         {hotkeyRows.map((hotkeyRow) => {
           const isCapturing = capturingAction === hotkeyRow.action;
           const currentValue = hotkeyRow.accelerator || "Not set";
           const canClear = !controlsDisabled && Boolean(hotkeyRow.accelerator);
 
           return (
-            <div
+            <li
               key={hotkeyRow.action}
-              className="grid gap-3 rounded-lg border border-border/70 bg-background/80 p-3 md:grid-cols-[1fr_auto] md:items-center"
+              className="grid gap-3 rounded-lg border border-border bg-surface-1 p-3 md:grid-cols-[1fr_auto] md:items-center"
             >
               <div>
-                <p className="text-sm font-medium">{hotkeyRow.title}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{hotkeyRow.description}</p>
+                <p className="text-sm font-medium text-foreground">{hotkeyRow.title}</p>
+                <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">
+                  {hotkeyRow.description}
+                </p>
               </div>
 
-              <div className="flex flex-wrap items-center justify-start gap-2 md:justify-end">
-                <span className="rounded-md border border-border/70 bg-muted/20 px-3 py-1.5 font-mono text-xs">
+              <div className="flex flex-wrap items-center justify-start gap-1.5 md:justify-end">
+                <span
+                  className={
+                    "rounded-sm border px-2.5 py-1 font-mono text-[11px] " +
+                    (isCapturing
+                      ? "border-indigo-500/40 bg-indigo-500/10 text-indigo-200"
+                      : "border-[color:var(--input)] bg-surface-2 text-foreground/85")
+                  }
+                >
                   {isCapturing ? "Press shortcut..." : currentValue}
                 </span>
                 <Button
                   type="button"
                   size="sm"
-                  variant={isCapturing ? "secondary" : "outline"}
+                  variant={isCapturing ? "primary" : "secondary"}
                   onClick={() => handleCaptureToggle(hotkeyRow.action)}
                   disabled={controlsDisabled}
                 >
@@ -117,20 +133,22 @@ export function HotkeySettingsPanel({ tauriRuntime }: Props) {
                   Clear
                 </Button>
               </div>
-            </div>
+            </li>
           );
         })}
-      </div>
+      </ul>
 
-      {capturingAction ? (
-        <p className="mt-3 text-xs text-muted-foreground">
-          Press a shortcut now. Press Escape to cancel capture.
-        </p>
-      ) : null}
-      {captureError ? <p className="mt-2 text-xs text-destructive">{captureError}</p> : null}
-      {savingAction ? <p className="mt-2 text-xs text-muted-foreground">Saving hotkey...</p> : null}
-      {hotkeyStatus ? <p className="mt-3 text-xs text-muted-foreground">{hotkeyStatus}</p> : null}
-      {hotkeyError ? <p className="mt-2 text-xs text-destructive">{hotkeyError}</p> : null}
+      <div className="flex flex-col gap-1 text-[11px]">
+        {capturingAction ? (
+          <p className="text-muted-foreground">
+            Press a shortcut now. Press Escape to cancel capture.
+          </p>
+        ) : null}
+        {captureError ? <p className="text-rose-400">{captureError}</p> : null}
+        {savingAction ? <p className="text-muted-foreground">Saving hotkey...</p> : null}
+        {hotkeyStatus ? <p className="text-muted-foreground">{hotkeyStatus}</p> : null}
+        {hotkeyError ? <p className="text-rose-400">{hotkeyError}</p> : null}
+      </div>
     </section>
   );
 }

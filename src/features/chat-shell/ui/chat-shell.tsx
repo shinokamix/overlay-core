@@ -1,6 +1,7 @@
 import type { ChatAvailability } from "@/features/chat-shell/model/use-chat-shell";
 import { useChatShell } from "@/features/chat-shell/model/use-chat-shell";
-import { Button } from "@/shared/ui/button";
+import { Badge } from "@/shared/ui/badge";
+import { cn } from "@/shared/lib/utils";
 
 type Props = {
   tauriRuntime: boolean;
@@ -21,11 +22,63 @@ function availabilityCopy(availability: ChatAvailability): string | null {
   }
 }
 
-function subtitle(availability: ChatAvailability): string {
-  if (availability.status === "ready" || availability.status === "no-api-key") {
-    return `${availability.provider.providerId} · ${availability.provider.model}`;
+function StatusIndicator({ availability }: { availability: ChatAvailability }) {
+  switch (availability.status) {
+    case "ready":
+      return (
+        <Badge tone="green" withDot>
+          Online
+        </Badge>
+      );
+    case "loading":
+      return (
+        <Badge tone="amber" withDot>
+          Loading
+        </Badge>
+      );
+    case "no-api-key":
+      return (
+        <Badge tone="amber" withDot>
+          API key required
+        </Badge>
+      );
+    case "no-provider":
+      return (
+        <Badge tone="rose" withDot>
+          No provider
+        </Badge>
+      );
+    case "browser":
+      return (
+        <Badge tone="neutral" withDot>
+          Browser preview
+        </Badge>
+      );
   }
-  return "No provider connected";
+}
+
+function providerModel(availability: ChatAvailability): string | null {
+  if (availability.status === "ready" || availability.status === "no-api-key") {
+    return availability.provider.model;
+  }
+  return null;
+}
+
+function SendIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path d="M12 20V4M5 11l7-7 7 7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function UserGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M5 20c1.5-3.5 4.2-5 7-5s5.5 1.5 7 5" strokeLinecap="round" />
+    </svg>
+  );
 }
 
 export function ChatShell({ tauriRuntime }: Props) {
@@ -35,43 +88,85 @@ export function ChatShell({ tauriRuntime }: Props) {
   const cta = availabilityCopy(availability);
   const composerDisabled = availability.status !== "ready" || isSending;
   const sendDisabled = composerDisabled || draft.trim().length === 0;
+  const model = providerModel(availability);
 
   return (
-    <section className="flex flex-1 flex-col gap-3">
-      <div>
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Overlay Chat</p>
-        <div className="flex items-baseline justify-between gap-2">
-          <h1 className="text-2xl font-semibold tracking-tight">Chat</h1>
-          <span className="text-xs text-muted-foreground">{subtitle(availability)}</span>
+    <section className="flex flex-1 flex-col gap-4 px-4 py-4">
+      <div className="flex items-end justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--text-muted-strong)]">
+            Overlay Chat
+          </p>
+          <h1 className="mt-1 text-lg font-semibold leading-tight tracking-tight">Chat</h1>
+        </div>
+        <div className="flex flex-col items-end gap-1.5">
+          <StatusIndicator availability={availability} />
+          {model ? (
+            <span className="font-mono text-[10px] text-muted-foreground">{model}</span>
+          ) : null}
         </div>
       </div>
 
       <ul
         aria-label="Conversation"
-        className="flex max-h-72 min-h-56 flex-col gap-3 overflow-y-auto rounded-xl border border-border/70 bg-muted/30 p-3"
+        className="lumina-scrollbar flex max-h-72 min-h-56 flex-col gap-3 overflow-y-auto rounded-xl border border-border bg-surface-1 p-3"
       >
         {messages.length === 0 ? (
-          <li className="m-auto max-w-[80%] text-center text-sm text-muted-foreground">
+          <li className="m-auto max-w-[80%] text-center text-xs leading-relaxed text-muted-foreground">
             {cta ?? "Send a message to start the conversation."}
           </li>
         ) : (
-          messages.map((message) => (
-            <li
-              key={message.id}
-              className={message.role === "user" ? "flex justify-end" : "flex justify-start"}
-            >
-              <p
-                className={
-                  message.role === "user"
-                    ? "max-w-[80%] rounded-2xl rounded-br-sm bg-primary px-3 py-2 text-sm text-primary-foreground"
-                    : "max-w-[80%] rounded-2xl rounded-bl-sm border border-border/80 bg-card px-3 py-2 text-sm"
-                }
+          messages.map((message) => {
+            const isUser = message.role === "user";
+            return (
+              <li
+                key={message.id}
+                className={cn("flex items-start gap-2", isUser ? "flex-row-reverse" : "flex-row")}
               >
-                {message.text}
-              </p>
-            </li>
-          ))
+                <span
+                  className={cn(
+                    "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-sm border text-[10px] font-semibold",
+                    isUser
+                      ? "border-[color:var(--input)] bg-surface-3 text-muted-foreground"
+                      : "border-indigo-500/30 bg-indigo-900/60 text-indigo-200",
+                  )}
+                  aria-hidden
+                >
+                  {isUser ? <UserGlyph /> : "AI"}
+                </span>
+                <p
+                  className={cn(
+                    "max-w-[78%] px-3 py-2 text-xs leading-relaxed",
+                    isUser
+                      ? "rounded-md rounded-br-[4px] bg-indigo-600 text-white"
+                      : "rounded-md rounded-bl-[4px] border border-border bg-surface-2 text-foreground",
+                  )}
+                >
+                  {message.text}
+                </p>
+              </li>
+            );
+          })
         )}
+
+        {isSending ? (
+          <li className="flex items-start gap-2">
+            <span
+              aria-hidden
+              className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-sm border border-indigo-500/30 bg-indigo-900/60 text-[10px] font-semibold text-indigo-200"
+            >
+              AI
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-md border border-border bg-surface-2 px-3 py-2 text-[11px] italic text-muted-foreground">
+              <span className="lumina-bubble-blink" aria-hidden>
+                <span />
+                <span />
+                <span />
+              </span>
+              Thinking...
+            </span>
+          </li>
+        ) : null}
       </ul>
 
       <form
@@ -79,24 +174,44 @@ export function ChatShell({ tauriRuntime }: Props) {
           event.preventDefault();
           void submitDraft();
         }}
-        className="flex items-center gap-2"
+        className="flex items-end gap-2 rounded-xl border border-[color:var(--input)] bg-surface-2 px-3 py-2 focus-within:border-indigo-500/40"
       >
-        <input
+        <textarea
           aria-label="Message"
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              if (!sendDisabled) {
+                void submitDraft();
+              }
+            }
+          }}
           placeholder={cta ?? "Type your message..."}
           disabled={composerDisabled}
-          className="h-10 flex-1 rounded-md border border-input bg-background px-3 text-sm shadow-sm disabled:cursor-not-allowed disabled:opacity-60"
+          rows={1}
+          className="lumina-scrollbar max-h-32 flex-1 resize-none bg-transparent text-xs text-foreground placeholder:text-[color:var(--text-muted-strong)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
         />
-        <Button type="submit" disabled={sendDisabled}>
-          {isSending ? "Sending..." : "Send"}
-        </Button>
+        <button
+          type="submit"
+          disabled={sendDisabled}
+          aria-label="Send"
+          title="Send"
+          className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-white shadow-sm transition-colors hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:size-4"
+        >
+          <SendIcon />
+          <span className="sr-only">{isSending ? "Sending..." : "Send"}</span>
+        </button>
       </form>
 
-      {messages.length > 0 && cta ? <p className="text-xs text-muted-foreground">{cta}</p> : null}
-      {sendStatus ? <p className="text-xs text-muted-foreground">{sendStatus}</p> : null}
-      {sendError ? <p className="text-xs text-destructive">{sendError}</p> : null}
+      {(messages.length > 0 && cta) || sendStatus || sendError ? (
+        <div className="flex flex-col gap-1 text-[11px]">
+          {messages.length > 0 && cta ? <p className="text-muted-foreground">{cta}</p> : null}
+          {sendStatus ? <p className="text-muted-foreground">{sendStatus}</p> : null}
+          {sendError ? <p className="text-rose-400">{sendError}</p> : null}
+        </div>
+      ) : null}
     </section>
   );
 }

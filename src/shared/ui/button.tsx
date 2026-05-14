@@ -5,23 +5,31 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/60 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+        default: "bg-primary text-primary-foreground shadow-sm hover:bg-indigo-600",
+        primary: "bg-primary text-primary-foreground shadow-sm hover:bg-indigo-600",
+        secondary:
+          "bg-surface-2 text-foreground border border-[color:var(--input)] hover:bg-surface-3",
+        ghost:
+          "bg-transparent text-muted-foreground border border-border hover:bg-surface-2 hover:text-foreground",
         outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-        secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-transparent text-muted-foreground border border-border hover:bg-surface-2 hover:text-foreground",
+        danger:
+          "bg-rose-500/15 text-rose-400 border border-rose-500/25 hover:bg-rose-500/25 hover:text-rose-400",
+        destructive:
+          "bg-rose-500/15 text-rose-400 border border-rose-500/25 hover:bg-rose-500/25 hover:text-rose-400",
+        link: "text-indigo-200 underline-offset-4 hover:underline border-0 bg-transparent",
       },
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
+        default: "h-9 px-4 text-xs rounded-md [&_svg]:size-3.5",
+        sm: "h-7 px-3 text-[11px] rounded-sm [&_svg]:size-3",
+        lg: "h-10 px-5 text-sm rounded-md [&_svg]:size-4",
+        icon: "h-9 w-9 rounded-md [&_svg]:size-4",
+        "icon-sm": "h-7 w-7 rounded-sm [&_svg]:size-3.5",
+        "icon-xs": "h-6 w-6 rounded-sm [&_svg]:size-3",
       },
     },
     defaultVariants: {

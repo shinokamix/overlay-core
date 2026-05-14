@@ -5,13 +5,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  --radius-sm: var(--radius-sm-value);
+  --radius-md: var(--radius-md-value);
+  --radius-lg: var(--radius-lg-value);
+  --radius-xl: var(--radius-xl-value);
+  --radius-2xl: var(--radius-2xl-value);
+  --radius-3xl: 28px;
+  --radius-4xl: 32px;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -43,75 +44,123 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-text-muted: var(--text-muted-strong);
+  --color-indigo-50: var(--indigo-50);
+  --color-indigo-100: var(--indigo-100);
+  --color-indigo-200: var(--indigo-200);
+  --color-indigo-400: var(--indigo-400);
+  --color-indigo-500: var(--indigo-500);
+  --color-indigo-600: var(--indigo-600);
+  --color-indigo-700: var(--indigo-700);
+  --color-indigo-900: var(--indigo-900);
+  --color-amber-200: var(--amber-200);
+  --color-amber-400: var(--amber-400);
+  --color-amber-500: var(--amber-500);
+  --color-amber-600: var(--amber-600);
+  --color-teal-400: var(--teal-400);
+  --color-teal-500: var(--teal-500);
+  --color-rose-400: var(--rose-400);
+  --color-rose-500: var(--rose-500);
+  --color-green-400: var(--green-400);
+  --color-green-500: var(--green-500);
+
+  --font-sans: "Sora", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Lumina palette */
+  --background: #0c0e14;
+  --foreground: #eef0ff;
+
+  --surface-1: #131720;
+  --surface-2: #1a1f2e;
+  --surface-3: #222840;
+
+  --card: var(--surface-1);
+  --card-foreground: #eef0ff;
+  --popover: var(--surface-1);
+  --popover-foreground: #eef0ff;
+
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: var(--surface-2);
+  --secondary-foreground: #eef0ff;
+  --muted: var(--surface-2);
+  --muted-foreground: #8b90b8;
+  --text-muted-strong: #4a5070;
+  --accent: var(--surface-3);
+  --accent-foreground: #eef0ff;
+  --destructive: #f43f5e;
+
+  --border: rgba(255, 255, 255, 0.07);
+  --input: rgba(255, 255, 255, 0.13);
+  --ring: #6366f1;
+
+  --indigo-50: #eeedff;
+  --indigo-100: #c9c6ff;
+  --indigo-200: #a09aff;
+  --indigo-400: #7c72ff;
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+  --indigo-700: #3730a3;
+  --indigo-900: #1e1b4b;
+  --amber-200: #fcd34d;
+  --amber-400: #fbbf24;
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --teal-400: #2dd4bf;
+  --teal-500: #14b8a6;
+  --rose-400: #fb7185;
+  --rose-500: #f43f5e;
+  --green-400: #4ade80;
+  --green-500: #22c55e;
+
+  --radius-sm-value: 6px;
+  --radius-md-value: 10px;
+  --radius-lg-value: 14px;
+  --radius-xl-value: 20px;
+  --radius-2xl-value: 24px;
+
+  --chart-1: #6366f1;
+  --chart-2: #2dd4bf;
+  --chart-3: #f59e0b;
+  --chart-4: #fb7185;
+  --chart-5: #4ade80;
+  --sidebar: var(--surface-1);
+  --sidebar-foreground: #eef0ff;
+  --sidebar-primary: #6366f1;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--surface-2);
+  --sidebar-accent-foreground: #eef0ff;
+  --sidebar-border: rgba(255, 255, 255, 0.07);
+  --sidebar-ring: #6366f1;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* The overlay ships dark-only; expose the same tokens under .dark for safety. */
+  --background: #0c0e14;
+  --foreground: #eef0ff;
+  --card: var(--surface-1);
+  --card-foreground: #eef0ff;
+  --popover: var(--surface-1);
+  --popover-foreground: #eef0ff;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: var(--surface-2);
+  --secondary-foreground: #eef0ff;
+  --muted: var(--surface-2);
+  --muted-foreground: #8b90b8;
+  --accent: var(--surface-3);
+  --accent-foreground: #eef0ff;
+  --destructive: #f43f5e;
+  --border: rgba(255, 255, 255, 0.07);
+  --input: rgba(255, 255, 255, 0.13);
+  --ring: #6366f1;
 }
 
 html,
@@ -123,4 +172,74 @@ body,
 
 body {
   margin: 0;
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "ss02", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--foreground);
+}
+
+/* Reusable Lumina components */
+
+.lumina-bubble-blink {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.lumina-bubble-blink span {
+  width: 4px;
+  height: 4px;
+  background: var(--indigo-400);
+  border-radius: 9999px;
+  animation: lumina-blink 1.2s infinite;
+}
+
+.lumina-bubble-blink span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.lumina-bubble-blink span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes lumina-blink {
+  0%,
+  80%,
+  100% {
+    opacity: 0.2;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+.lumina-overlay-glow {
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgba(99, 102, 241, 0.18) 0%, transparent 55%),
+    radial-gradient(120% 80% at 100% 100%, rgba(20, 184, 166, 0.1) 0%, transparent 55%),
+    linear-gradient(135deg, rgba(26, 16, 64, 0.85) 0%, rgba(10, 15, 30, 0.95) 100%);
+}
+
+.lumina-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-3) transparent;
+}
+
+.lumina-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.lumina-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.lumina-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--surface-3);
+  border-radius: 9999px;
+}
+
+.lumina-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--indigo-400);
 }
