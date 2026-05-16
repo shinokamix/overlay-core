@@ -9,11 +9,11 @@ export type SettingsSection = {
 
 export const settingsSections: SettingsSection[] = [
   {
-    id: "mcp-servers",
-    label: "MCP servers",
-    title: "MCP servers",
+    id: "providers",
+    label: "Providers",
+    title: "Providers",
     description:
-      "Manage MCP endpoints, transport options, and trust rules for tool integrations in a single place.Manage MCP endpoints, transport options, and trust rules for tool integrations in a single place.",
+      "Set up model providers, select defaults, and configure credentials, routing, and fallback behavior.",
   },
   {
     id: "hotkeys",
@@ -23,17 +23,17 @@ export const settingsSections: SettingsSection[] = [
       "Configure keyboard shortcuts for overlay visibility, interaction mode, and other quick actions.",
   },
   {
+    id: "mcp-servers",
+    label: "MCP servers",
+    title: "MCP servers",
+    description:
+      "Manage MCP endpoints, transport options, and trust rules for tool integrations in a single place.",
+  },
+  {
     id: "skills",
     label: "Skills",
     title: "Skills",
     description:
       "Review installed skills, connect local skill packs, and control which skills are available in sessions.",
-  },
-  {
-    id: "providers",
-    label: "Providers",
-    title: "Providers",
-    description:
-      "Set up model providers, select defaults, and configure credentials, routing, and fallback behavior.",
   },
 ];
