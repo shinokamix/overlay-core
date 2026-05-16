@@ -1,13 +1,88 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
+import { X } from "lucide-react";
 import { useHotkeySettings } from "@/features/hotkey-settings/model";
 import { toHotkeyAccelerator } from "@/features/hotkey-settings/model/hotkey-accelerator";
 import type { HotkeyAction } from "@/shared/config/hotkeys";
 import { Button } from "@/shared/ui/button";
 import { PanelHeader } from "@/shared/ui/panel-header";
+import { cn } from "@/shared/lib/utils";
 
 type Props = {
   tauriRuntime: boolean;
 };
+
+function KeyBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <kbd className="rounded border border-b-2 border-[color:var(--input)] bg-surface-2 px-2 py-0.5 font-mono text-[10px] text-foreground/85">
+      {children}
+    </kbd>
+  );
+}
+
+type BindingDisplayProps = {
+  accelerator: string | null;
+  isCapturing: boolean;
+  disabled: boolean;
+  onClick: () => void;
+};
+
+function BindingDisplay({ accelerator, isCapturing, disabled, onClick }: BindingDisplayProps) {
+  const base =
+    "flex min-w-[110px] cursor-pointer items-center justify-center gap-1 rounded-md border px-3 py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50";
+
+  if (isCapturing) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        className={cn(
+          base,
+          "animate-pulse border-indigo-500/50 bg-indigo-500/10 text-[11px] text-indigo-300",
+        )}
+      >
+        Recording…
+      </button>
+    );
+  }
+
+  if (!accelerator) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        className={cn(
+          base,
+          "border-dashed border-border bg-surface-1 text-[11px] italic text-muted-foreground",
+          "hover:border-indigo-500/30 hover:bg-indigo-500/5 hover:text-indigo-300",
+        )}
+      >
+        Click to record
+      </button>
+    );
+  }
+
+  const parts = accelerator.split("+");
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        base,
+        "border-[color:var(--input)] bg-surface-1 hover:border-indigo-500/30 hover:bg-indigo-500/5",
+      )}
+    >
+      {parts.map((part, i) => (
+        <Fragment key={i}>
+          {i > 0 && <span className="text-[10px] text-muted-foreground">+</span>}
+          <KeyBadge>{part}</KeyBadge>
+        </Fragment>
+      ))}
+    </button>
+  );
+}
 
 export function HotkeySettingsPanel({ tauriRuntime }: Props) {
   const {
@@ -69,7 +144,6 @@ export function HotkeySettingsPanel({ tauriRuntime }: Props) {
       setCaptureError("");
       return;
     }
-
     setCapturingAction(action);
     setCaptureError("");
   }
@@ -81,49 +155,36 @@ export function HotkeySettingsPanel({ tauriRuntime }: Props) {
       <ul className="flex flex-col gap-2">
         {hotkeyRows.map((hotkeyRow) => {
           const isCapturing = capturingAction === hotkeyRow.action;
-          const currentValue = hotkeyRow.accelerator || "Not set";
           const canClear = !controlsDisabled && Boolean(hotkeyRow.accelerator);
 
           return (
             <li
               key={hotkeyRow.action}
-              className="grid gap-3 rounded-lg border border-border bg-surface-1 p-3 md:grid-cols-[1fr_auto] md:items-center"
+              className="flex items-center justify-between gap-3 rounded-lg border border-border bg-surface-1 p-3"
             >
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-medium text-foreground">{hotkeyRow.title}</p>
                 <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">
                   {hotkeyRow.description}
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center justify-start gap-1.5 md:justify-end">
-                <span
-                  className={
-                    "rounded-sm border px-2.5 py-1 font-mono text-[11px] " +
-                    (isCapturing
-                      ? "border-indigo-500/40 bg-indigo-500/10 text-indigo-200"
-                      : "border-[color:var(--input)] bg-surface-2 text-foreground/85")
-                  }
-                >
-                  {isCapturing ? "Press shortcut..." : currentValue}
-                </span>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={isCapturing ? "primary" : "secondary"}
-                  onClick={() => handleCaptureToggle(hotkeyRow.action)}
+              <div className="flex shrink-0 items-center gap-1.5">
+                <BindingDisplay
+                  accelerator={hotkeyRow.accelerator}
+                  isCapturing={isCapturing}
                   disabled={controlsDisabled}
-                >
-                  {isCapturing ? "Cancel" : "Change"}
-                </Button>
+                  onClick={() => handleCaptureToggle(hotkeyRow.action)}
+                />
                 <Button
                   type="button"
-                  size="sm"
+                  size="icon-sm"
                   variant="ghost"
                   onClick={() => void updateHotkey(hotkeyRow.action, "")}
                   disabled={!canClear}
+                  aria-label="Clear shortcut"
                 >
-                  Clear
+                  <X className="size-3.5" />
                 </Button>
               </div>
             </li>
@@ -133,12 +194,10 @@ export function HotkeySettingsPanel({ tauriRuntime }: Props) {
 
       <div className="flex flex-col gap-1 text-[11px]">
         {capturingAction ? (
-          <p className="text-muted-foreground">
-            Press a shortcut now. Press Escape to cancel capture.
-          </p>
+          <p className="text-muted-foreground">Press a shortcut now. Escape to cancel.</p>
         ) : null}
         {captureError ? <p className="text-rose-400">{captureError}</p> : null}
-        {savingAction ? <p className="text-muted-foreground">Saving hotkey...</p> : null}
+        {savingAction ? <p className="text-muted-foreground">Saving…</p> : null}
         {hotkeyStatus ? <p className="text-muted-foreground">{hotkeyStatus}</p> : null}
         {hotkeyError ? <p className="text-rose-400">{hotkeyError}</p> : null}
       </div>

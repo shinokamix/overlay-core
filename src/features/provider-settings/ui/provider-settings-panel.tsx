@@ -1,5 +1,11 @@
 import { useMemo, useState } from "react";
 import { Plus } from "lucide-react";
+
+const PROVIDER_COLORS: Record<string, string> = {
+  openai: "bg-emerald-500",
+  anthropic: "bg-amber-500",
+  gemini: "bg-blue-500",
+};
 import {
   useActiveProvider,
   useProviderCatalog,
@@ -197,6 +203,12 @@ export function ProviderSettingsPanel({ tauriRuntime }: Props) {
                 <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                   <div className="grid min-w-0 gap-1">
                     <div className="flex flex-wrap items-center gap-2">
+                      <span
+                        className={cn(
+                          "mt-0.5 size-2 shrink-0 rounded-full",
+                          PROVIDER_COLORS[connection.providerId] ?? "bg-neutral-500",
+                        )}
+                      />
                       <span className="text-sm font-medium text-foreground">
                         {connection.displayName}
                       </span>
@@ -232,7 +244,7 @@ export function ProviderSettingsPanel({ tauriRuntime }: Props) {
                         onClick={() => void makeActive(connection)}
                         disabled={isBusy}
                       >
-                        {isBusy ? "Switching..." : "Use this"}
+                        {isBusy ? "Setting…" : "Set as default"}
                       </Button>
                     ) : null}
                     <Button
