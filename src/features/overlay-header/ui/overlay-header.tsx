@@ -1,6 +1,5 @@
 import { Settings2, X } from "lucide-react";
 import { useOverlayWindowControls } from "@/features/overlay-header/model/use-overlay-window-controls";
-import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 
 type Props = {
@@ -33,18 +32,9 @@ export function OverlayHeader({ tauriRuntime, onOpenSettings }: Props) {
         className="flex flex-1 cursor-grab select-none flex-col gap-0.5 active:cursor-grabbing"
       >
         <div className="flex items-baseline gap-2">
-          <span className="text-sm font-semibold text-foreground">
-            Lumina <span className="text-indigo-400">Chat</span>
-          </span>
-          <Badge
-            tone="indigo"
-            className="font-mono text-[10px]"
-            style={{ paddingTop: 2, paddingBottom: 2 }}
-          >
-            v1.0
-          </Badge>
+          <span className="text-sm font-semibold text-foreground">overlay-core</span>
         </div>
-        <span className="text-[11px] text-muted-foreground">AI overlay assistant</span>
+        <span className="text-[11px] text-muted-foreground">AI assistant</span>
       </div>
 
       <Button
