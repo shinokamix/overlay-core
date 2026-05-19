@@ -2,8 +2,8 @@ use tauri::AppHandle;
 
 use crate::features::providers::catalog::{self, ProviderCatalog};
 use crate::features::providers::model::{
-    ActiveProviderView, ActiveSelectionInput, ChatMessageInput, ChatMessageResponse,
-    NewProviderConnectionInput, ProviderConnectionView, ProviderSettingsInput,
+    ActiveProviderView, ActiveSelectionInput, ChatChunkPayload, ChatMessageInput,
+    ChatMessageResponse, NewProviderConnectionInput, ProviderConnectionView, ProviderSettingsInput,
     ProviderSettingsView, UpdateProviderConnectionInput,
 };
 use crate::features::providers::service;
@@ -65,4 +65,12 @@ pub async fn send_chat_message(
     input: ChatMessageInput,
 ) -> Result<ChatMessageResponse, String> {
     service::send_chat_message(&app, input).await
+}
+
+pub async fn stream_chat_message(
+    app: AppHandle,
+    input: ChatMessageInput,
+    on_event: tauri::ipc::Channel<ChatChunkPayload>,
+) -> Result<(), String> {
+    service::stream_chat_message(&app, input, on_event).await
 }

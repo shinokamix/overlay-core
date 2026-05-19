@@ -6,8 +6,9 @@ use crate::features::providers::adapters::{self, ChatRequest};
 use crate::features::providers::catalog::{self, ProviderCatalogEntry};
 use crate::features::providers::credentials;
 use crate::features::providers::model::{
-    ActiveProviderView, ActiveSelection, ActiveSelectionInput, ChatMessage, ChatMessageInput,
-    ChatMessageResponse, ChatRole, LegacyProviderConfigFile, NewProviderConnectionInput,
+    ActiveProviderView, ActiveSelection, ActiveSelectionInput, ChatChunkPayload, ChatMessage,
+    ChatMessageInput, ChatMessageResponse, ChatRole, LegacyProviderConfigFile,
+    NewProviderConnectionInput,
     ProviderConfigFile, ProviderConnection, ProviderConnectionView, ProviderSettingsInput,
     ProviderSettingsView, UpdateProviderConnectionInput, WireChatMessage, PROVIDER_CONFIG_VERSION,
 };
@@ -770,6 +771,35 @@ pub async fn send_chat_message(
     let client = reqwest::Client::new();
     let text = adapters::complete(entry.protocol, &client, request).await?;
     Ok(ChatMessageResponse { text })
+}
+
+pub async fn stream_chat_message(
+    app: &AppHandle,
+    input: ChatMessageInput,
+    channel: tauri::ipc::Channel<ChatChunkPayload>,
+) -> Result<(), String> {
+    let messages = messages_from_input(&input)?;
+    let resolved = resolve_active_provider(app)?;
+    let entry = catalog_entry(&resolved.connection.provider_id)?;
+
+    let request = ChatRequest {
+        base_url: resolved.connection.base_url.clone(),
+        api_key: resolved.api_key.clone(),
+        model: resolved.model.clone(),
+        messages,
+        max_output_tokens: lookup_max_output_tokens(
+            &resolved.connection.provider_id,
+            &resolved.model,
+        ),
+    };
+
+    let client = reqwest::Client::new();
+    adapters::complete_streaming(entry.protocol, &client, request, move |text| {
+        channel
+            .send(ChatChunkPayload { text })
+            .map_err(|e| e.to_string())
+    })
+    .await
 }
 
 // ---------- Unit tests ----------

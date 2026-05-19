@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { Channel, invoke } from "@tauri-apps/api/core";
 
 export type ChatRole = "system" | "user" | "assistant";
 
@@ -15,4 +15,15 @@ export async function sendChatMessage(messages: WireChatMessage[]): Promise<Chat
   return invoke<ChatMessageResponse>("send_chat_message", {
     input: { messages },
   });
+}
+
+export type ChatChunk = { text: string };
+
+export function streamChatMessage(
+  messages: WireChatMessage[],
+  onChunk: (chunk: ChatChunk) => void,
+): Promise<void> {
+  const channel = new Channel<ChatChunk>();
+  channel.onmessage = onChunk;
+  return invoke<void>("stream_chat_message", { input: { messages }, onEvent: channel });
 }

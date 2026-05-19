@@ -1,7 +1,9 @@
 import { ArrowUp, User } from "lucide-react";
+import { useEffect, useRef } from "react";
 import type { ChatAvailability } from "@/features/chat-shell/model/use-chat-shell";
 import { useChatShell } from "@/features/chat-shell/model/use-chat-shell";
 import { cn } from "@/shared/lib/utils";
+import { MarkdownMessage } from "./markdown-message";
 
 type Props = {
   tauriRuntime: boolean;
@@ -30,11 +32,30 @@ export function ChatShell({ tauriRuntime }: Props) {
   const composerDisabled = availability.status !== "ready" || isSending;
   const sendDisabled = composerDisabled || draft.trim().length === 0;
 
+  const lastMessage = messages[messages.length - 1];
+  const showThinking = isSending && lastMessage?.role !== "assistant";
+
+  const listRef = useRef<HTMLUListElement>(null);
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  }, [messages]);
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [draft]);
+
   return (
     <section className="flex flex-1 flex-col gap-4 px-4 py-4">
       <ul
+        ref={listRef}
         aria-label="Conversation"
-        className="lumina-scrollbar flex max-h-72 min-h-56 flex-col gap-3 overflow-y-auto rounded-xl border border-border bg-surface-1 p-3"
+        className="lumina-scrollbar flex h-72 flex-col gap-3 overflow-y-auto rounded-md border border-border bg-surface-1 p-3"
       >
         {messages.length === 0 ? (
           <li className="m-auto max-w-[80%] text-center text-xs leading-relaxed text-muted-foreground">
@@ -59,22 +80,22 @@ export function ChatShell({ tauriRuntime }: Props) {
                 >
                   {isUser ? <User className="size-3.5" /> : "AI"}
                 </span>
-                <p
-                  className={cn(
-                    "max-w-[78%] px-3 py-2 text-xs leading-relaxed",
-                    isUser
-                      ? "rounded-md rounded-br-[4px] bg-indigo-600 text-white"
-                      : "rounded-md rounded-bl-[4px] border border-border bg-surface-2 text-foreground",
-                  )}
-                >
-                  {message.text}
-                </p>
+                {isUser ? (
+                  <p className="max-w-[78%] rounded-md rounded-br-[4px] bg-indigo-600 px-3 py-2 text-xs leading-relaxed text-white">
+                    {message.text}
+                  </p>
+                ) : (
+                  <MarkdownMessage
+                    text={message.text}
+                    className="max-w-[78%] rounded-md rounded-bl-[4px] border border-border bg-surface-2 px-3 py-2 text-xs text-foreground"
+                  />
+                )}
               </li>
             );
           })
         )}
 
-        {isSending ? (
+        {showThinking ? (
           <li className="flex items-start gap-2">
             <span
               aria-hidden
@@ -99,9 +120,10 @@ export function ChatShell({ tauriRuntime }: Props) {
           event.preventDefault();
           void submitDraft();
         }}
-        className="flex items-end gap-2 rounded-xl border border-[color:var(--input)] bg-surface-2 px-3 py-2 focus-within:border-indigo-500/40"
+        className="flex items-end gap-2 rounded-md border border-[color:var(--input)] bg-surface-2 px-3.5 py-2 transition-shadow focus-within:border-indigo-500/40 focus-within:shadow-[0_0_0_3px_rgba(201,173,167,0.08)]"
       >
         <textarea
+          ref={textareaRef}
           aria-label="Message"
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
@@ -113,17 +135,18 @@ export function ChatShell({ tauriRuntime }: Props) {
               }
             }
           }}
-          placeholder={cta ?? "Type your message..."}
+          placeholder={cta ?? "Message..."}
           disabled={composerDisabled}
           rows={1}
-          className="lumina-scrollbar max-h-32 flex-1 resize-none bg-transparent text-xs text-foreground placeholder:text-[color:var(--text-muted-strong)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+          className="lumina-scrollbar flex-1 resize-none overflow-y-auto bg-transparent text-xs leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+          style={{ maxHeight: "8rem", height: "100%" }}
         />
         <button
           type="submit"
           disabled={sendDisabled}
           aria-label="Send"
           title="Send"
-          className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-white shadow-sm transition-colors hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:size-4"
+          className="flex size-5 shrink-0 items-center justify-center rounded-sm bg-primary text-white transition-all hover:bg-indigo-500 active:scale-90 disabled:cursor-not-allowed disabled:opacity-30 [&_svg]:size-3.5"
         >
           <ArrowUp />
           <span className="sr-only">{isSending ? "Sending..." : "Send"}</span>

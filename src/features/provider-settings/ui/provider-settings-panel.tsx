@@ -2,9 +2,9 @@ import { useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 
 const PROVIDER_COLORS: Record<string, string> = {
-  openai: "bg-emerald-500",
+  openai: "bg-teal-400",
   anthropic: "bg-amber-500",
-  gemini: "bg-blue-500",
+  gemini: "bg-indigo-400",
 };
 import {
   useActiveProvider,
@@ -164,12 +164,8 @@ export function ProviderSettingsPanel({ tauriRuntime }: Props) {
 
   return (
     <section className="flex flex-col gap-4">
-      <div className="flex items-start justify-between gap-3">
-        <PanelHeader
-          eyebrow="Providers"
-          title="Connections"
-          description="Add provider connections and pick which one the chat uses. API keys are stored in the OS credential store and never returned to the UI."
-        />
+      <div className="flex items-center justify-between gap-3">
+        <PanelHeader eyebrow="Providers" title="Connections" />
         <Button
           type="button"
           variant="primary"

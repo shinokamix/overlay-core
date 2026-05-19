@@ -1,4 +1,4 @@
-import { Cpu, Keyboard, Server, Sparkles } from "lucide-react";
+import { Cpu, Keyboard } from "lucide-react";
 import type { SettingsSection, SettingsSectionId } from "@/features/settings-modal/model";
 import { TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
@@ -9,15 +9,13 @@ type Props = {
 const SECTION_ICONS: Record<SettingsSectionId, React.ComponentType<{ className?: string }>> = {
   providers: Cpu,
   hotkeys: Keyboard,
-  "mcp-servers": Server,
-  skills: Sparkles,
 };
 
 export function SettingsModalSidebar({ sections }: Props) {
   return (
     <TabsList
       aria-label="Settings categories"
-      className="flex h-full w-[200px] shrink-0 flex-col items-stretch justify-start gap-0.5 rounded-none border-r border-border bg-surface-1 p-2"
+      className="flex h-full w-[140px] shrink-0 flex-col items-stretch justify-start gap-0.5 rounded-none border-r border-border bg-surface-1 p-2"
     >
       <p className="px-2 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--text-muted-strong)]">
         Categories

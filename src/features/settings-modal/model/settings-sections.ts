@@ -1,4 +1,4 @@
-export type SettingsSectionId = "mcp-servers" | "hotkeys" | "skills" | "providers";
+export type SettingsSectionId = "hotkeys" | "providers";
 
 export type SettingsSection = {
   id: SettingsSectionId;
@@ -21,19 +21,5 @@ export const settingsSections: SettingsSection[] = [
     title: "Hotkeys",
     description:
       "Configure keyboard shortcuts for overlay visibility, interaction mode, and other quick actions.",
-  },
-  {
-    id: "mcp-servers",
-    label: "MCP servers",
-    title: "MCP servers",
-    description:
-      "Manage MCP endpoints, transport options, and trust rules for tool integrations in a single place.",
-  },
-  {
-    id: "skills",
-    label: "Skills",
-    title: "Skills",
-    description:
-      "Review installed skills, connect local skill packs, and control which skills are available in sessions.",
   },
 ];

@@ -1,7 +1,7 @@
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { toErrorMessage } from "@/shared/lib/to-error-message";
 import { useActiveProvider, type ActiveProviderView } from "@/shared/lib/providers";
-import { sendChatMessage, type WireChatMessage } from "./api";
+import { streamChatMessage, type WireChatMessage } from "./api";
 
 export type ChatMessage = {
   id: string;
@@ -54,12 +54,29 @@ export function useChatShell(tauriRuntime: boolean): UseChatShellResult {
   const [sendError, setSendError] = useState("");
   const [isSending, setIsSending] = useState(false);
   const sequenceRef = useRef(0);
+  const pendingChunkRef = useRef("");
+  const rafRef = useRef<number | null>(null);
 
   const activeProviderQuery = useActiveProvider(tauriRuntime);
   const availability = useMemo(
     () => deriveAvailability(tauriRuntime, activeProviderQuery.isLoading, activeProviderQuery.data),
     [tauriRuntime, activeProviderQuery.isLoading, activeProviderQuery.data],
   );
+
+  const flushPending = useCallback((assistantId: string, firstChunkRef: { current: boolean }) => {
+    const text = pendingChunkRef.current;
+    if (!text) return;
+    pendingChunkRef.current = "";
+
+    if (firstChunkRef.current) {
+      firstChunkRef.current = false;
+      setMessages((previous) => [...previous, { id: assistantId, role: "assistant", text }]);
+    } else {
+      setMessages((previous) =>
+        previous.map((m) => (m.id === assistantId ? { ...m, text: m.text + text } : m)),
+      );
+    }
+  }, []);
 
   async function submitDraft() {
     if (availability.status !== "ready") {
@@ -96,18 +113,35 @@ export function useChatShell(tauriRuntime: boolean): UseChatShellResult {
     setSendError("");
     setIsSending(true);
 
+    const assistantId = `assistant-${idPrefix}`;
+    const firstChunkRef = { current: true };
+    pendingChunkRef.current = "";
+
+    const scheduleFlush = () => {
+      if (rafRef.current !== null) return;
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = null;
+        flushPending(assistantId, firstChunkRef);
+      });
+    };
+
     try {
-      const response = await sendChatMessage(history);
-      setMessages((previous) => [
-        ...previous,
-        {
-          id: `assistant-${idPrefix}`,
-          role: "assistant",
-          text: response.text,
-        },
-      ]);
+      await streamChatMessage(history, ({ text }) => {
+        pendingChunkRef.current += text;
+        scheduleFlush();
+      });
+      // flush any remaining buffered text after stream ends
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      flushPending(assistantId, firstChunkRef);
       setSendStatus("Provider response received.");
     } catch (error) {
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
       setSendError(`Failed to send message: ${toErrorMessage(error)}`);
     } finally {
       setIsSending(false);
