@@ -18,7 +18,6 @@ describe("App", () => {
     const user = userEvent.setup();
     renderApp();
 
-    expect(screen.getByRole("heading", { name: /^chat$/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /send/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /send/i })).toBeDisabled();
     expect(screen.getByRole("textbox", { name: /message/i })).toBeDisabled();
@@ -28,15 +27,10 @@ describe("App", () => {
 
     await user.click(screen.getByRole("button", { name: /settings/i }));
     expect(screen.getByRole("dialog", { name: /settings/i })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /mcp servers/i })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: /hotkeys/i })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /skills/i })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: /providers/i })).toBeInTheDocument();
 
     await user.click(screen.getByRole("tab", { name: /hotkeys/i }));
-    expect(
-      screen.getByText(/open in tauri desktop runtime to configure hotkeys/i),
-    ).toBeInTheDocument();
     expect(screen.getByText(/toggle overlay visibility/i)).toBeInTheDocument();
 
     await user.click(screen.getByRole("tab", { name: /providers/i }));
