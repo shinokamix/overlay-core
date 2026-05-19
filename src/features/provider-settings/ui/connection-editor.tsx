@@ -31,7 +31,7 @@ const fieldLabelClass =
 const sectionLabelClass =
   "text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground";
 const inputClass =
-  "h-9 rounded-md border border-[color:var(--input)] bg-surface-1 px-3 text-xs text-foreground placeholder:text-[color:var(--text-muted-strong)] outline-none transition-colors focus:border-indigo-500/50 disabled:cursor-not-allowed disabled:opacity-60";
+  "h-9 max-w-3xs rounded-md border border-[color:var(--input)] bg-surface-1 px-3 text-xs text-foreground placeholder:text-[color:var(--text-muted-strong)] outline-none transition-colors focus:border-indigo-500/50 disabled:cursor-not-allowed disabled:opacity-60";
 
 function defaultInitialState(
   mode: ConnectionFormMode,
@@ -143,7 +143,7 @@ export function ConnectionEditor({ mode, catalog, initialConnection, onDone, onC
         void submit();
       }}
     >
-      <div className="flex flex-wrap items-start justify-between gap-2">
+      <div className="flexflex-wrap items-start justify-between gap-2">
         <PanelHeader
           as="h3"
           eyebrow={mode === "add" ? "New connection" : "Edit connection"}
@@ -239,7 +239,7 @@ export function ConnectionEditor({ mode, catalog, initialConnection, onDone, onC
             </datalist>
           </label>
 
-          <fieldset className="grid gap-2 rounded-md border border-border bg-surface-1 p-3">
+          <fieldset className="grid w-3xs gap-2 rounded-md border border-border bg-surface-1 p-3">
             <legend className={`${fieldLabelClass} px-1`}>Custom models</legend>
             {state.customModels.length === 0 ? (
               <p className="text-[11px] text-muted-foreground">
@@ -327,7 +327,7 @@ export function ConnectionEditor({ mode, catalog, initialConnection, onDone, onC
         </p>
       ) : null}
 
-      <footer className="flex items-center justify-end gap-2 pt-1">
+      <footer className="flex px-3 items-center justify-end gap-2 pt-1">
         <Button type="button" size="sm" variant="ghost" onClick={onCancel} disabled={isSubmitting}>
           Cancel
         </Button>

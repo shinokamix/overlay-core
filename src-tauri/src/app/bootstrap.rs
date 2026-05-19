@@ -43,7 +43,8 @@ pub fn run() {
             commands::get_provider_settings,
             commands::save_provider_settings,
             commands::remove_provider_credentials,
-            commands::send_chat_message
+            commands::send_chat_message,
+            commands::stream_chat_message
         ]);
 
     builder

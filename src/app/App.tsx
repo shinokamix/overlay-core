@@ -16,10 +16,11 @@ export default function App() {
   useOverlayWindowSizeSync({ panelRef, tauriRuntime });
 
   return (
-    <main className="p-3 text-foreground">
+    <main className="relative p-3 text-foreground">
+      {tauriRuntime && <div data-tauri-drag-region="" className="absolute inset-0" aria-hidden />}
       <section
         ref={panelRef}
-        className="lumina-overlay-glow relative mx-auto flex w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-[color:var(--input)] bg-card/85 shadow-2xl backdrop-blur"
+        className="lumina-overlay-glow relative mx-auto flex w-full max-w-3xl flex-col overflow-hidden rounded-md border border-[color:var(--input)] bg-card/85 shadow-2xl backdrop-blur"
       >
         <OverlayHeader tauriRuntime={tauriRuntime} onOpenSettings={openSettings} />
         <ChatShell tauriRuntime={tauriRuntime} />

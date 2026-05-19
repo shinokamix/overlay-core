@@ -4,9 +4,15 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useChatShell } from "@/features/chat-shell/model/use-chat-shell";
 
-vi.mock("@tauri-apps/api/core", () => ({
-  invoke: vi.fn(),
-}));
+vi.mock("@tauri-apps/api/core", () => {
+  class MockChannel<T> {
+    onmessage: ((data: T) => void) | null = null;
+  }
+  return {
+    invoke: vi.fn(),
+    Channel: MockChannel,
+  };
+});
 
 import { invoke } from "@tauri-apps/api/core";
 
@@ -110,7 +116,7 @@ describe("useChatShell", () => {
     });
 
     expect(result.current.messages).toHaveLength(0);
-    expect(invokeMock).not.toHaveBeenCalledWith("send_chat_message", expect.anything());
+    expect(invokeMock).not.toHaveBeenCalledWith("stream_chat_message", expect.anything());
   });
 
   it("sends the full conversation history when ready and appends the reply", async () => {
@@ -125,13 +131,15 @@ describe("useChatShell", () => {
           hasApiKey: true,
         };
       }
-      if (command === "send_chat_message") {
-        const messages =
-          (args as { input?: { messages?: { role: string; content: string }[] } } | undefined)
-            ?.input?.messages ?? [];
-        // Echo the last user message for assertion convenience.
-        const lastUser = [...messages].reverse().find((message) => message.role === "user");
-        return { text: `echo: ${lastUser?.content ?? ""}` };
+      if (command === "stream_chat_message") {
+        const typedArgs = args as {
+          input?: { messages?: { role: string; content: string }[] };
+          onEvent?: { onmessage: ((chunk: { text: string }) => void) | null };
+        };
+        const messages = typedArgs?.input?.messages ?? [];
+        const lastUser = [...messages].reverse().find((m) => m.role === "user");
+        typedArgs?.onEvent?.onmessage?.({ text: `echo: ${lastUser?.content ?? ""}` });
+        return undefined;
       }
       throw new Error(`unexpected command ${command}`);
     });
@@ -170,9 +178,11 @@ describe("useChatShell", () => {
       "echo: second",
     ]);
 
-    const sendCalls = invokeMock.mock.calls.filter(([command]) => command === "send_chat_message");
-    expect(sendCalls).toHaveLength(2);
-    const secondCallInput = sendCalls[1][1] as {
+    const streamCalls = invokeMock.mock.calls.filter(
+      ([command]) => command === "stream_chat_message",
+    );
+    expect(streamCalls).toHaveLength(2);
+    const secondCallInput = streamCalls[1][1] as {
       input: { messages: { role: string; content: string }[] };
     };
     expect(secondCallInput.input.messages).toEqual([

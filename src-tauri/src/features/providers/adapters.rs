@@ -1,3 +1,4 @@
+use futures_util::StreamExt;
 use reqwest::{Client, StatusCode};
 use serde_json::{json, Value};
 
@@ -36,6 +37,72 @@ pub async fn complete(
         ProviderProtocol::Anthropic => anthropic::send(client, request).await,
         ProviderProtocol::Gemini => gemini::send(client, request).await,
     }
+}
+
+/// Send a streaming chat completion. Calls `on_chunk` for each text delta.
+/// Returns when the stream ends normally; the caller can treat the return as "done".
+pub async fn complete_streaming<F>(
+    protocol: ProviderProtocol,
+    client: &Client,
+    request: ChatRequest,
+    on_chunk: F,
+) -> Result<(), String>
+where
+    F: Fn(String) -> Result<(), String>,
+{
+    if request.messages.is_empty() {
+        return Err("at least one chat message is required".to_string());
+    }
+
+    match protocol {
+        ProviderProtocol::Openai => openai::stream(client, request, on_chunk).await,
+        ProviderProtocol::Anthropic => anthropic::stream(client, request, on_chunk).await,
+        ProviderProtocol::Gemini => gemini::stream(client, request, on_chunk).await,
+    }
+}
+
+/// Read an SSE response line by line, calling `handle_data` for each `data: …` line.
+/// Return `true` from the callback to stop early (e.g. on a `[DONE]` sentinel).
+async fn read_sse<F>(builder: reqwest::RequestBuilder, mut handle_data: F) -> Result<(), String>
+where
+    F: FnMut(&str) -> Result<bool, String>,
+{
+    let response = builder
+        .send()
+        .await
+        .map_err(|e| format!("failed to send provider request: {e}"))?;
+
+    let status = response.status();
+    if status != StatusCode::OK {
+        let body = response.text().await.unwrap_or_default();
+        return Err(format!("provider returned {status}: {body}"));
+    }
+
+    let mut byte_stream = response.bytes_stream();
+    let mut buf = String::new();
+
+    'read: while let Some(chunk) = byte_stream.next().await {
+        let bytes = chunk.map_err(|e| format!("stream read error: {e}"))?;
+        buf.push_str(&String::from_utf8_lossy(&bytes));
+
+        loop {
+            match buf.find('\n') {
+                None => break,
+                Some(pos) => {
+                    let line = buf[..pos].trim_end_matches('\r').to_string();
+                    buf = buf[pos + 1..].to_string();
+
+                    if let Some(data) = line.strip_prefix("data: ") {
+                        if handle_data(data)? {
+                            break 'read;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Ok(())
 }
 
 fn role_str(role: ChatRole) -> &'static str {
@@ -94,6 +161,42 @@ pub mod openai {
 
         let payload = dispatch_text(builder).await?;
         parse_response(&payload)
+    }
+
+    pub async fn stream<F: Fn(String) -> Result<(), String>>(
+        client: &Client,
+        request: ChatRequest,
+        on_chunk: F,
+    ) -> Result<(), String> {
+        let endpoint = format!("{}/chat/completions", request.base_url);
+        let mut body = build_body(&request.model, &request.messages);
+        body["stream"] = json!(true);
+
+        let mut builder = client.post(endpoint).json(&body);
+        if let Some(api_key) = request.api_key.as_deref().filter(|key| !key.is_empty()) {
+            builder = builder.bearer_auth(api_key);
+        }
+
+        read_sse(builder, move |data| {
+            if data == "[DONE]" {
+                return Ok(true);
+            }
+            let value: Value = serde_json::from_str(data)
+                .map_err(|e| format!("failed to parse SSE chunk: {e}"))?;
+            let text = value
+                .get("choices")
+                .and_then(Value::as_array)
+                .and_then(|c| c.first())
+                .and_then(|c| c.get("delta"))
+                .and_then(|d| d.get("content"))
+                .and_then(Value::as_str)
+                .unwrap_or("");
+            if !text.is_empty() {
+                on_chunk(text.to_string())?;
+            }
+            Ok(false)
+        })
+        .await
     }
 }
 
@@ -193,6 +296,53 @@ pub mod anthropic {
         let payload = dispatch_text(builder).await?;
         parse_response(&payload)
     }
+
+    pub async fn stream<F: Fn(String) -> Result<(), String>>(
+        client: &Client,
+        request: ChatRequest,
+        on_chunk: F,
+    ) -> Result<(), String> {
+        let api_key = request
+            .api_key
+            .as_deref()
+            .filter(|key| !key.is_empty())
+            .ok_or_else(|| "anthropic requires an API key".to_string())?;
+
+        let mut body = build_body(
+            &request.model,
+            &request.messages,
+            request.max_output_tokens.unwrap_or(DEFAULT_MAX_OUTPUT_TOKENS),
+        )?;
+        body["stream"] = json!(true);
+
+        let endpoint = format!("{}/messages", request.base_url);
+        let builder = client
+            .post(endpoint)
+            .header("x-api-key", api_key)
+            .header("anthropic-version", ANTHROPIC_API_VERSION)
+            .json(&body);
+
+        read_sse(builder, move |data| {
+            let value: Value = serde_json::from_str(data)
+                .map_err(|e| format!("failed to parse SSE chunk: {e}"))?;
+            match value.get("type").and_then(Value::as_str) {
+                Some("content_block_delta") => {
+                    let text = value
+                        .get("delta")
+                        .and_then(|d| d.get("text"))
+                        .and_then(Value::as_str)
+                        .unwrap_or("");
+                    if !text.is_empty() {
+                        on_chunk(text.to_string())?;
+                    }
+                    Ok(false)
+                }
+                Some("message_stop") => Ok(true),
+                _ => Ok(false),
+            }
+        })
+        .await
+    }
 }
 
 // ---------- Google Gemini Generative Language API ----------
@@ -275,6 +425,53 @@ pub mod gemini {
 
         let payload = dispatch_text(builder).await?;
         parse_response(&payload)
+    }
+
+    pub async fn stream<F: Fn(String) -> Result<(), String>>(
+        client: &Client,
+        request: ChatRequest,
+        on_chunk: F,
+    ) -> Result<(), String> {
+        let api_key = request
+            .api_key
+            .as_deref()
+            .filter(|key| !key.is_empty())
+            .ok_or_else(|| "gemini requires an API key".to_string())?;
+
+        let body = build_body(&request.messages)?;
+        let endpoint = format!(
+            "{}/models/{}:streamGenerateContent",
+            request.base_url, request.model
+        );
+        let builder = client
+            .post(endpoint)
+            .query(&[("key", api_key), ("alt", "sse")])
+            .json(&body);
+
+        read_sse(builder, move |data| {
+            let value: Value = serde_json::from_str(data)
+                .map_err(|e| format!("failed to parse SSE chunk: {e}"))?;
+            let text: String = value
+                .get("candidates")
+                .and_then(Value::as_array)
+                .and_then(|c| c.first())
+                .and_then(|c| c.get("content"))
+                .and_then(|c| c.get("parts"))
+                .and_then(Value::as_array)
+                .map(|parts| {
+                    parts
+                        .iter()
+                        .filter_map(|p| p.get("text").and_then(Value::as_str))
+                        .collect::<Vec<_>>()
+                        .join("")
+                })
+                .unwrap_or_default();
+            if !text.is_empty() {
+                on_chunk(text)?;
+            }
+            Ok(false)
+        })
+        .await
     }
 }
 

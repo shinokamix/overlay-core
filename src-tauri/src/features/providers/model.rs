@@ -197,3 +197,9 @@ pub struct ChatMessageInput {
 pub struct ChatMessageResponse {
     pub text: String,
 }
+
+#[derive(Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ChatChunkPayload {
+    pub text: String,
+}

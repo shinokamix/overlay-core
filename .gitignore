@@ -30,3 +30,7 @@ test-results
 *.njsproj
 *.sln
 *.sw?
+
+#ai
+.claude/*
+.claude

@@ -5,8 +5,8 @@ use crate::features::hotkeys::state::HotkeyBindingsState;
 use crate::features::overlay::state::OverlayRuntimeState;
 use crate::features::providers::catalog::ProviderCatalog;
 use crate::features::providers::model::{
-    ActiveProviderView, ActiveSelectionInput, ChatMessageInput, ChatMessageResponse,
-    NewProviderConnectionInput, ProviderConnectionView, ProviderSettingsInput,
+    ActiveProviderView, ActiveSelectionInput, ChatChunkPayload, ChatMessageInput,
+    ChatMessageResponse, NewProviderConnectionInput, ProviderConnectionView, ProviderSettingsInput,
     ProviderSettingsView, UpdateProviderConnectionInput,
 };
 
@@ -111,4 +111,13 @@ pub async fn send_chat_message(
     input: ChatMessageInput,
 ) -> Result<ChatMessageResponse, String> {
     crate::features::providers::commands::send_chat_message(app, input).await
+}
+
+#[tauri::command]
+pub async fn stream_chat_message(
+    app: AppHandle,
+    input: ChatMessageInput,
+    on_event: tauri::ipc::Channel<ChatChunkPayload>,
+) -> Result<(), String> {
+    crate::features::providers::commands::stream_chat_message(app, input, on_event).await
 }

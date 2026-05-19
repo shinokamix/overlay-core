@@ -28,7 +28,7 @@ type BindingDisplayProps = {
 
 function BindingDisplay({ accelerator, isCapturing, disabled, onClick }: BindingDisplayProps) {
   const base =
-    "flex min-w-[110px] cursor-pointer items-center justify-center gap-1 rounded-md border px-3 py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50";
+    "flex min-w-[110px] cursor-pointer items-center justify-center gap-1 rounded-md border p-1 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50";
 
   if (isCapturing) {
     return (
@@ -89,7 +89,6 @@ export function HotkeySettingsPanel({ tauriRuntime }: Props) {
     hotkeyRows,
     hotkeyError,
     hotkeyStatus,
-    hotkeySupportHint,
     isHotkeySaving,
     isHotkeysLoading,
     savingAction,
@@ -150,7 +149,7 @@ export function HotkeySettingsPanel({ tauriRuntime }: Props) {
 
   return (
     <section className="flex flex-col gap-4">
-      <PanelHeader eyebrow="Hotkeys" title="Keyboard shortcuts" description={hotkeySupportHint} />
+      <PanelHeader eyebrow="Hotkeys" title="Keyboard shortcuts" />
 
       <ul className="flex flex-col gap-2">
         {hotkeyRows.map((hotkeyRow) => {
@@ -160,16 +159,13 @@ export function HotkeySettingsPanel({ tauriRuntime }: Props) {
           return (
             <li
               key={hotkeyRow.action}
-              className="flex items-center justify-between gap-3 rounded-lg border border-border bg-surface-1 p-3"
+              className="flex flex-col justify-between gap-3 rounded-md border border-border bg-surface-1 p-3"
             >
               <div className="min-w-0">
                 <p className="text-sm font-medium text-foreground">{hotkeyRow.title}</p>
-                <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">
-                  {hotkeyRow.description}
-                </p>
               </div>
 
-              <div className="flex shrink-0 items-center gap-1.5">
+              <div className="flex shrink-0 items-center justify-between">
                 <BindingDisplay
                   accelerator={hotkeyRow.accelerator}
                   isCapturing={isCapturing}
