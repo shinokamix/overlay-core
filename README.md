@@ -2,6 +2,8 @@
 
 Windows-first, local-first desktop AI overlay built with Tauri + React.
 
+<img width="1912" height="1032" alt="image" src="https://github.com/user-attachments/assets/950995c6-5e97-4a7e-8be7-37b5ec5a9274" />
+
 ## What this repo contains
 
 - Hotkey-driven overlay shell.
